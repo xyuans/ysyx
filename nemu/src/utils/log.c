@@ -21,6 +21,11 @@ extern uint64_t g_nr_guest_inst;
 FILE *log_fp = NULL;
 
 void init_log(const char *log_file) {
+  /* 1. stdout 是一个 FILE* 类型的全局指针，定义在 <stdio.h> 头文件中
+   * 2. 根据传入的日志文件路径 (log_file) 决定将日志输出到文件还是标准输出.log_file=NULL时输出控制台。 
+   * 3. Assert是省级版的assert，log是升级版的printf()
+   *
+   * */
   log_fp = stdout;
   if (log_file != NULL) {
     FILE *fp = fopen(log_file, "w");

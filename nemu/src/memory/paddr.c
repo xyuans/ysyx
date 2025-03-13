@@ -24,6 +24,9 @@ static uint8_t *pmem = NULL;
 static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 #endif
 
+/*
+ * 1. 返回指向模拟内存的指针
+ * */
 uint8_t* guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }
 paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
 
@@ -41,6 +44,11 @@ static void out_of_bound(paddr_t addr) {
       addr, PMEM_LEFT, PMEM_RIGHT, cpu.pc);
 }
 
+/*
+ * 1. 代码实际执行endif部分
+ * 2. void *meset(void *s, int c, unsigned long n); 将s指向的内存的前n字节用c来替代。
+ * 3. CONFIG_MSIZE=0x8000000, 128MB.
+ * */
 void init_mem() {
 #if   defined(CONFIG_PMEM_MALLOC)
   pmem = malloc(CONFIG_MSIZE);

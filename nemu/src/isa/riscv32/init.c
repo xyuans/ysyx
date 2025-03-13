@@ -27,6 +27,12 @@ static const uint32_t img [] = {
 };
 
 static void restart() {
+  /*
+   * 1. cpu type= struct {
+   * 			  	word_t gpt[32;]
+   * 			  	vaddr_t pc;
+   * 			  }
+   * */
   /* Set the initial program counter. */
   cpu.pc = RESET_VECTOR;
 
@@ -36,8 +42,14 @@ static void restart() {
 
 void init_isa() {
   /* Load built-in image. */
+  /*
+   * 1. RESET_VECTORS是约定的一个内存位置，用来放初始化客户程序
+   * 2. img为内置的客户程序
+   * */
   memcpy(guest_to_host(RESET_VECTOR), img, sizeof(img));
-
+  /*
+   * 1. 会初始化寄存器
+   * */
   /* Initialize this virtual computer system. */
   restart();
 }

@@ -19,13 +19,15 @@
 #include <common.h>
 
 // ----------- state -----------
-
+/*
+ * 1. 匿名枚举适用于不需要声明变量、仅需一组整型常量的场景（如状态码、标志位）
+ * */
 enum { NEMU_RUNNING, NEMU_STOP, NEMU_END, NEMU_ABORT, NEMU_QUIT };
 
 typedef struct {
-  int state;
-  vaddr_t halt_pc;
-  uint32_t halt_ret;
+  int state;             // 状态标识（如运行、暂停、异常等）
+  vaddr_t halt_pc;       // 停止时的程序计数器（PC）值
+  uint32_t halt_ret;     // 停止时的返回值或错误码
 } NEMUState;
 
 extern NEMUState nemu_state;

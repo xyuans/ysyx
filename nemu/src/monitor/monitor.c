@@ -106,13 +106,19 @@ void init_monitor(int argc, char *argv[]) {
 
   /* Set random seed. */
   init_rand();
-
+  /*
+   * 1. 根据传入的日志文件路径 (log_file) 决定将日志输出到文件还是标准输出.log_file=NULL时输出控制台。
+   * */
   /* Open the log file. */
   init_log(log_file);
 
   /* Initialize memory. */
   init_mem();
-
+  
+  /*
+   * 1. 若CONFIG_DEVICE这个宏有定义，则执行init_device()这个函数，若没有则无事发生。
+   * 2. 并没有执行这行代码。 
+   * */
   /* Initialize devices. */
   IFDEF(CONFIG_DEVICE, init_device());
 
