@@ -65,6 +65,7 @@ static int cmd_q(char *args) {
 
 static int cmd_help(char *args);
 
+
 static struct {
   const char *name;
   const char *description;
@@ -121,8 +122,11 @@ void sdb_mainloop() {
     char *str_end = str + strlen(str);                   // 计算输入字符串的结尾位置
 
     /* extract the first token as the command */
-    char *cmd = strtok(str, " ");
-    if (cmd == NULL) { continue; }
+    char *cmd = strtok(str, " ");												 // 分割出命令（首个空格前的部分）
+		/*
+		 * continue只能在while和for循环中，跳过当前迭代(循环)，进入下一下循环
+		 * */
+    if (cmd == NULL) { continue; }                       // 忽略空输入 
 
     /* treat the remaining string as the arguments,
      * which may need further parsing
