@@ -29,6 +29,10 @@
 #define ARRLEN(arr) (int)(sizeof(arr) / sizeof(arr[0]))
 
 // macro concatenation
+/*
+ * 1. ## 会直接连接两个符号的文本,不会展开参数中的宏,concat_temp就是为了展开洪
+ * 2. 为什么这里使用小写？
+ * */
 #define concat_temp(x, y) x ## y
 #define concat(x, y) concat_temp(x, y)
 #define concat3(x, y, z) concat(concat(x, y), z)
@@ -39,13 +43,24 @@
 // See https://stackoverflow.com/questions/26099745/test-if-preprocessor-symbol-is-defined-inside-macro
 #define CHOOSE2nd(a, b, ...) b
 #define MUX_WITH_COMMA(contain_comma, a, b) CHOOSE2nd(contain_comma a, b)
+/*
+ * 1. 拼接p和macro，并传递给MUX_WITH_COMMA
+ * 2. 引号，各种括号内的逗号不会分割参数
+ * 3. ,a在这种情况下a是第二个参数。
+ * */
 #define MUX_MACRO_PROPERTY(p, macro, a, b) MUX_WITH_COMMA(concat(p, macro), a, b)
 // define placeholders for some property
+/*
+ * 1. 用于判定宏是否存在 
+ * */
 #define __P_DEF_0  X,
 #define __P_DEF_1  X,
 #define __P_ONE_1  X,
 #define __P_ZERO_0 X,
 // define some selection functions based on the properties of BOOLEAN macro
+/*
+ *1. 若macro已定义，展开为X，未定义，展开为Y
+ * */
 #define MUXDEF(macro, X, Y)  MUX_MACRO_PROPERTY(__P_DEF_, macro, X, Y)
 #define MUXNDEF(macro, X, Y) MUX_MACRO_PROPERTY(__P_DEF_, macro, Y, X)
 #define MUXONE(macro, X, Y)  MUX_MACRO_PROPERTY(__P_ONE_, macro, X, Y)
@@ -68,6 +83,9 @@
 #define __IGNORE(...)
 #define __KEEP(...) __VA_ARGS__
 // keep the code if a boolean macro is defined
+/*
+ * 1. __KEEP也需要参数，最后的(__VA_ARGS__)用于传递参数。
+ * */
 #define IFDEF(macro, ...) MUXDEF(macro, __KEEP, __IGNORE)(__VA_ARGS__)
 // keep the code if a boolean macro is undefined
 #define IFNDEF(macro, ...) MUXNDEF(macro, __KEEP, __IGNORE)(__VA_ARGS__)

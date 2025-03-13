@@ -26,13 +26,23 @@ void init_wp_pool();
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
+ /*
+ * 1. 静态局部变量（static修饰）在程序启动时初始化，生命周期持续到程序结束，即使函数执行结束，变量依然存在。
+ *    静态局部变量的作用域仅限定义它的函数内部，其他函数无法直接访问它。  
+ * */
   static char *line_read = NULL;
 
   if (line_read) {
     free(line_read);
     line_read = NULL;
   }
-
+  
+  /*
+   * 1. readline用于读取一行输入。可以指定一个prompt，显示在输入前（nemu）
+   *    返回一个指向输入内容的指针。
+   * 2. add_history(const char *line) 用于将字符串添加到历史记录的命令，
+   *    方便用户上下左右浏览之前命令
+   * */
   line_read = readline("(nemu) ");
 
   if (line_read && *line_read) {
@@ -49,6 +59,7 @@ static int cmd_c(char *args) {
 
 
 static int cmd_q(char *args) {
+  nemu_state.state = NEMU_QUIT;
   return -1;
 }
 
@@ -97,13 +108,17 @@ void sdb_set_batch_mode() {
 }
 
 void sdb_mainloop() {
-  if (is_batch_mode) {
+  if (is_batch_mode) {             // 检查是否处于批处理模式
     cmd_c(NULL);
     return;
   }
 
-  for (char *str; (str = rl_gets()) != NULL; ) {
-    char *str_end = str + strlen(str);
+  for (char *str; (str = rl_gets()) != NULL; ) {         // 读取用户输入
+	/*
+	 * strlen()函数用来计算字符串长度，不包括/0.
+	 * str_end最终指向字符串中存储/0的这个字节
+	 * */
+    char *str_end = str + strlen(str);                   // 计算输入字符串的结尾位置
 
     /* extract the first token as the command */
     char *cmd = strtok(str, " ");

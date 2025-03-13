@@ -34,7 +34,13 @@ static void restart() {
   cpu.gpr[0] = 0;
 }
 
+/*
+ * 1. 
+ * */
 void init_isa() {
+  /*
+   * 1. void *memcpy(void *dest, const void *src, size_t n);
+   * */
   /* Load built-in image. */
   memcpy(guest_to_host(RESET_VECTOR), img, sizeof(img));
 
