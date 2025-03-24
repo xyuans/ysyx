@@ -18,6 +18,11 @@
 
 #include <common.h>
 
+
+/*
+ * 1. RICSCV32的32个通用寄存器和程序计数器PC
+ * 2. gpr代表那32个通用寄存器，pc是程序计数器
+ * */
 typedef struct {
   word_t gpr[MUXDEF(CONFIG_RVE, 16, 32)];
   vaddr_t pc;

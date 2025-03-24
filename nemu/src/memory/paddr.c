@@ -47,6 +47,7 @@ static void out_of_bound(paddr_t addr) {
 /*
  * 1. 代码实际执行endif部分
  * 2. void *meset(void *s, int c, unsigned long n); 将s指向的内存的前n字节用c来替代。
+ *    虽然c是int型，会保留0-255,即一个字节
  * 3. CONFIG_MSIZE=0x8000000, 128MB.
  * */
 void init_mem() {

@@ -12,21 +12,38 @@
 *
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
-
+#include <string.h>
 #include <isa.h>
 
 /* We use the POSIX regex functions to process regular expressions.
  * Type 'man regex' for more information about POSIX regex functions.
  */
 #include <regex.h>
-
+/*
+ * 1. enmu内部的标识符，通常都使用大写
+ * 2. 默认从0值开始递增0，规则是这样的:
+ *      enum{
+ *        A,      // 0
+ *        B = 5,  // 5  
+ *        C,      // 6
+ *        D = 3,  // 3
+ *        E       // 4
+ *      }
+ * 3. 这里的用法是声明了一组常量。
+ * 4. ASCII表一共有128个字符
+ *  */
 enum {
   TK_NOTYPE = 256, TK_EQ,
 
   /* TODO: Add more token types */
-
+  TK_NUM
 };
 
+/*
+ * 1. +为量词，表示匹配前一个元素一次或多次
+ * 2. \为转义字符，在C语言中，\本身需要转义，所以\\+表示字符串\+，\+
+ *    在正则表达式中表示真实字符+。
+ * */
 static struct rule {
   const char *regex;
   int token_type;
@@ -36,13 +53,22 @@ static struct rule {
    * Pay attention to the precedence level of different rules.
    */
 
-  {" +", TK_NOTYPE},    // spaces
-  {"\\+", '+'},         // plus
-  {"==", TK_EQ},        // equal
+  {" +",    TK_NOTYPE},    // spaces
+  {"==",    TK_EQ},        // equal
+  {"\\d+",  TK_NUM},       // number
+  {"\\+",   '+'},          // plus
+  {"-",     '-'},
+  {"\\*",   '*'},
+  {"/",     '/'},
+  {"\\(",   "("},
+  {"\\)",   ")"},
 };
 
 #define NR_REGEX ARRLEN(rules)
 
+/*
+ * regex_t结构体存储编译后的正则表达式模式，以便高效重复使用。
+ * */
 static regex_t re[NR_REGEX] = {};
 
 /* Rules are used for many times.
@@ -53,6 +79,12 @@ void init_regex() {
   char error_msg[128];
   int ret;
 
+  /*
+   * 1. regcomp()函数将字符串形式的正则表达式(如 "[0-9]+")编译成底层可执行的模式。
+   *      &re[i]：目标存储位置，类型为 regex_t 的指针。
+   *      rules[i].regex：源字符串，即预定义的正则表达式（如rules结构体的regex字段）
+   *      REG_EXTENDED：标志位，表示使用扩展正则语法（支持更丰富的语法，如 +、?、|）
+   * */
   for (i = 0; i < NR_REGEX; i ++) {
     ret = regcomp(&re[i], rules[i].regex, REG_EXTENDED);
     if (ret != 0) {
@@ -67,6 +99,10 @@ typedef struct token {
   char str[32];
 } Token;
 
+/*
+ * 1. 编译器在开启优化时，会自动删除“未被使用”的一些静态变量
+ * 2. __attribute__((used))的作用是强制编译器保留某些符号
+ * */
 static Token tokens[32] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
@@ -75,30 +111,56 @@ static bool make_token(char *e) {
   int i;
   regmatch_t pmatch;
 
-  nr_token = 0;
+  nr_token = 0;     // 指示已经被识别出的token数目
 
   while (e[position] != '\0') {
     /* Try all rules one by one. */
+    /* 1. 用所有预定义的正则表达式规则（re 数组）尝试匹配当前位置的字符串
+     * 2. int regexec(
+     *       const regex_t *preg,         // 编译后的正则表达式
+     *       const char *string,          // 目标字符串
+     *       size_t nmatch,               // pmatch数组大小
+     *       regmatch_t pmatch[],         // 存储匹配位置的结构体数组
+     *       int eflags                   // 执行标志
+     *     );
+     *     该函数匹配成功会返回0
+     * 3. typedef struct {
+     *          regoff_t rm_so;           // 匹配的起始偏移（从 string 开头计算）
+     *          regoff_t rm_eo;           // 匹配的结束偏移（不包含该字符）
+     *      } regmatch_t;
+     * */
     for (i = 0; i < NR_REGEX; i ++) {
       if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
         char *substr_start = e + position;
         int substr_len = pmatch.rm_eo;
-
+      
         Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
             i, rules[i].regex, position, substr_len, substr_len, substr_start);
 
         position += substr_len;
 
         /* TODO: Now a new token is recognized with rules[i]. Add codes
-         * to record the token in the array `tokens'. For certain types
-         * of tokens, some extra actions should be performed.
-         */
+          * to record the token in the array `tokens'. For certain types
+          * of tokens, some extra actions should be performed.
+          */
+        
+        /*
+          * 1. void *memcpy(void *dest, const void *src, size_t n);
+          * */
+        assert(substr_len <= 32);
+        tokens[nr_token].type = rules[i].token_type;
+        memcpy(tokens[nr_token].str, e + position, substr_len);
+        tokens[nr_token].str[substr_len] = '\0';
+        // switch (rules[i].token_type) {
+        //   case TK_NUM:
+        //     assert(substr_len <= 32);
+        //     tokens[nr_token].type = TK_NUM;
+        //     assert()
+        //   default: TODO();
+        // }
 
-        switch (rules[i].token_type) {
-          default: TODO();
-        }
-
-        break;
+        nr_token++;
+        assert(nr_token <= 32);
       }
     }
 
@@ -112,6 +174,29 @@ static bool make_token(char *e) {
 }
 
 
+static bool check_parentheses(int p, int q) {
+  if ((tokens[p] == '(') && (tokens[q] == ')') {
+    int i;    // 遍历字符串的当前偏移位置
+    for (i = 1; p + i < q; i++) {
+      if (tokens[p+i] == ')') { return false };
+    }
+    return true;
+  }
+  return false;
+}
+
+static uint32_t eval(int p, int q) {
+  if (p > q) {
+    return -1;
+  }
+  else if (p == q) {
+    return sscanf(tokens[p].str, %d);
+  }
+  else if (check_parentheses(p, q)) {
+      
+    } 
+}
+
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
     *success = false;
@@ -119,7 +204,10 @@ word_t expr(char *e, bool *success) {
   }
 
   /* TODO: Insert codes to evaluate the expression. */
-  TODO();
 
+  Token *p = tokens[0];   // p指向子表达式开始位置， p指向子表达式开始位置
+  Token *q = tokens[nr_token-1];    // 索引可以使用表达式
+  
+  
   return 0;
 }
