@@ -33,7 +33,8 @@
  * 4. ASCII表一共有128个字符
  *  */
 enum {
-  TK_NOTYPE = 256, TK_EQ,
+  TK_NOTYPE = 256,
+  TK_EQ = 128,
 
   /* TODO: Add more token types */
   TK_NUM
@@ -60,8 +61,8 @@ static struct rule {
   {"-",     '-'},
   {"\\*",   '*'},
   {"/",     '/'},
-  {"\\(",   "("},
-  {"\\)",   ")"},
+  {"\\(",   '('},
+  {"\\)",   ')'},
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -174,27 +175,88 @@ static bool make_token(char *e) {
 }
 
 
-static bool check_parentheses(int p, int q) {
-  if ((tokens[p] == '(') && (tokens[q] == ')') {
-    int i;    // 遍历字符串的当前偏移位置
-    for (i = 1; p + i < q; i++) {
-      if (tokens[p+i] == ')') { return false };
+static bool match_parentheses(const char *str) {
+  int count = 0;
+  for (; *str != '\0'; str++) {
+    if (*str == '(') { count++; }
+    else if(*str == ')') {
+      if (count == 0) { return false; }
+      count--;
     }
-    return true;
+  }
+  return count == 0;
+}
+
+static bool check_parentheses(int p,int q) {
+  if ((tokens[p].type == '(') && (tokens[q].type == ')')) {
+    int count = 0;
+    p++;
+    for (;p != q; p++) {
+      if (tokens[p].type == '(') { count++; }
+      else if (tokens[p].type == ')') {
+        if (count == 0) { return false; }
+        count--;
+      }
+    }
+    return count == 0;
   }
   return false;
 }
 
-static uint32_t eval(int p, int q) {
-  if (p > q) {
-    return -1;
+static int get_op(int p, int q) {
+  int op1 = -1;
+  int op2 = -1;
+  for (;p != q; p++) {
+    if (tokens[p].type == '+' || tokens[p].type == '-') {
+      op1 = p;
+    }
+    else if (tokens[p].type == '*' || tokens[p].type == '/') {
+      op2 =p;
+    }
+    else if (tokens[p].type == '(') {
+      do {
+        p++;
+      } while(tokens[p].type == ')');
+    }
   }
-  else if (p == q) {
-    return sscanf(tokens[p].str, %d);
+  return op1>0 ? op1 : op2;
+}
+
+static uint32_t eval(int p, int q) {
+  assert(p <= q);
+  if (p == q) {
+    int value;
+    char *str = tokens[p].str;
+    for (;*str != '\0'; str++) {
+      if (*str < 47 || *str > 58) {
+        printf("bad expression\n");
+        exit(1);
+      }
+    }
+    sscanf(str, "%d", &value);
+    return value;
   }
   else if (check_parentheses(p, q)) {
-      
-    } 
+    return eval(p + 1, q - 1);
+  }
+  else {
+    int op = get_op(p, q);
+    int val1 = eval(p, op - 1);
+    int val2 = eval(op + 1, q);
+
+    switch (tokens[op].type) {
+      case '+': return val1 + val2;
+      case '-': return val1 - val2;
+      case '*': return val1 * val2;
+      case '/':
+        if (val2 == 0) {
+          printf("bad expression\n");
+          exit(1);
+        }
+        return val1 / val2;
+      default: assert(0);
+    }    
+  }
 }
 
 word_t expr(char *e, bool *success) {
@@ -202,12 +264,17 @@ word_t expr(char *e, bool *success) {
     *success = false;
     return 0;
   }
-
+  
   /* TODO: Insert codes to evaluate the expression. */
+  if (!match_parentheses(e)) {
+      printf("bad expression:parentheses don't match\n");
+      exit(1);
+  }
 
-  Token *p = tokens[0];   // p指向子表达式开始位置， p指向子表达式开始位置
-  Token *q = tokens[nr_token-1];    // 索引可以使用表达式
+  int len = ARRLEN(tokens);
+  assert(len > 1); 
+  int p = 0;  // 子字符串起始位置
+  int q = len - 1;  // 子字符串终止位置
   
-  
-  return 0;
+  return eval(p, q);
 }

@@ -83,6 +83,10 @@ static int cmd_help(char *args);
 
 static int cmd_si(char *args);
 
+static int cmd_info(char *args);
+
+static int cmd_p(char *args);
+
 static struct {
   const char *name;
   const char *description;
@@ -97,7 +101,17 @@ static struct {
 		"si",
 		"Step into N instruction and halt.if N is not given, the defaut is 1",
 		cmd_si
-	}
+	},
+  {
+    "info",
+    "print register or watchpoint",
+    cmd_info
+  },
+  {
+    "p",
+    "evaluate expression",
+    cmd_p
+  }
 };
  
 #define NR_CMD ARRLEN(cmd_table)
@@ -126,7 +140,6 @@ static int cmd_help(char *args) {
 }
 
 
-
 static int cmd_si(char *args) {
 	char *arg = strtok(args, " ");
 	if (arg == NULL) {
@@ -141,6 +154,27 @@ static int cmd_si(char *args) {
 		cpu_exec(steps);
 		return 0;
 	}
+  return 0;
+}
+
+static int cmd_info(char *args) {
+  char *arg = strtok(args, " ");
+  if (args == NULL) {
+    printf("info expect a argument:r or w");
+    return 0;
+  }
+  if (*arg == 'r') {
+    isa_reg_display();
+    return 0;
+  }
+  return 0;
+}
+
+static int cmd_p(char *args) {
+  bool success;
+  uint32_t value;
+  value = expr(args, &success);
+  printf("%u", value);
   return 0;
 }
 
@@ -162,6 +196,12 @@ void sdb_mainloop() {
     char *str_end = str + strlen(str);                   // 计算输入字符串的结尾位置
 
     /* extract the first token as the command */
+    /*
+     * 1. strtok 是 C 语言中用于分割字符串的函数
+     *    当strtok在str中找到delim中的任意分隔符时，会将该位置替换为\0
+     *    传入"apple,banana,,grape",第一次调用后：apple\0banana,,grape"
+     *    第二次调用后apple\0banana\0,grape
+     * */
     char *cmd = strtok(str, " ");
     if (cmd == NULL) { continue; }
 
@@ -182,9 +222,15 @@ void sdb_mainloop() {
     for (i = 0; i < NR_CMD; i ++) {
 			/*
 			 * 1. int strncmp(const char *s1, const char *s2, size_t n);
-			 * 2. 如果两个字符串相同则会返回0.
+			 * 2. 将两个字符串从首字母开始进行比较。若出现第一个
+       *    不同字符，则以第一个不同的比较结果作为整个比较结果
+       *    如果两个字符串相同则会返回0.
 			 * */
       if (strcmp(cmd, cmd_table[i].name) == 0) {
+        /*
+         * 返回值小于0则退出循环
+         * 也就是说命令的返回值用来控制是否退出循环
+         * */
         if (cmd_table[i].handler(args) < 0) { return; }
         break;
       }
