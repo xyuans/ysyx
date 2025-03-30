@@ -60,8 +60,8 @@ static char* rl_gets() {
 static int string_to_number(const char *str) {
 	unsigned int number = 0;
 	for(;*str != '\0';str++) {
-		if (*str<49 || *str>57) {
-			return -1;  // 字符串不是大于1的整数
+		if (*str<48 || *str>57) {
+			return -1;  // 字符串不是大于0的整数的整数
 		};
 		number = number * 10 + (*str) - 48; 
 	}
