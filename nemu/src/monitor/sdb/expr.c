@@ -56,7 +56,7 @@ static struct rule {
 
   {" +",    TK_NOTYPE},    // spaces
   {"==",    TK_EQ},        // equal
-  {"\\d+",  TK_NUM},       // number
+  {"[0-9]+",  TK_NUM},       // number
   {"\\+",   '+'},          // plus
   {"-",     '-'},
   {"\\*",   '*'},
@@ -90,7 +90,7 @@ void init_regex() {
     ret = regcomp(&re[i], rules[i].regex, REG_EXTENDED);
     if (ret != 0) {
       regerror(ret, &re[i], error_msg, 128);
-      panic("regex compilation failed: %s\n%s", error_msg, rules[i].regex);
+      panic("regex compilation failed: %s\n%s\n", error_msg, rules[i].regex);
     }
   }
 }
