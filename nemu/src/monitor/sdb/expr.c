@@ -232,7 +232,7 @@ static uint32_t eval(int p, int q) {
         exit(1);
       }
     }
-    sscanf(str, "%d", &value);
+    sscanf(tokens[p].str, "%d", &value);
     return value;
   }
   else if (check_parentheses(p, q)) {

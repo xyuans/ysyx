@@ -171,7 +171,7 @@ static int cmd_info(char *args) {
 }
 
 static int cmd_p(char *args) {
-  bool success;
+  bool success = true;
   uint32_t value;
   value = expr(args, &success);
   if (success == false) { return 0; };
