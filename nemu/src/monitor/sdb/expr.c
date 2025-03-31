@@ -162,6 +162,7 @@ static bool make_token(char *e) {
 
         nr_token++;
         assert(nr_token <= 32);
+        return true;
       }
     }
 
