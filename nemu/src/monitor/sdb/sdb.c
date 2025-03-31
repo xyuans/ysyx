@@ -160,7 +160,7 @@ static int cmd_si(char *args) {
 static int cmd_info(char *args) {
   char *arg = strtok(args, " ");
   if (args == NULL) {
-    printf("info expect a argument:r or w");
+    printf("info r -- print register\ninfo w -- print watchpoint\n");
     return 0;
   }
   if (*arg == 'r') {

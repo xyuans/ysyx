@@ -107,7 +107,7 @@ typedef struct token {
 static Token tokens[32] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
-static bool make_token(char *e) {
+static int make_token(char *e) {
   int position = 0;
   int i;
   regmatch_t pmatch;
@@ -159,20 +159,17 @@ static bool make_token(char *e) {
         //     assert()
         //   default: TODO();
         // }
-
         nr_token++;
-        assert(nr_token <= 32);
-        return true;
       }
     }
 
     if (i == NR_REGEX) {
       printf("no match at position %d\n%s\n%*.s^\n", position, e, position, "");
-      return false;
+      return 0;
     }
   }
-
-  return true;
+  
+  return nr_token;
 }
 
 
@@ -261,19 +258,20 @@ static uint32_t eval(int p, int q) {
 }
 
 word_t expr(char *e, bool *success) {
-  if (!make_token(e)) {
+  int len = make_token(e);
+  if (len == 0) {
     *success = false;
     return 0;
   }
-  
+ 
+
+
   /* TODO: Insert codes to evaluate the expression. */
   if (!match_parentheses(e)) {
       printf("bad expression:parentheses don't match\n");
       exit(1);
   }
-
-  int len = ARRLEN(tokens);
-  assert(len > 1); 
+ 
   int p = 0;  // 子字符串起始位置
   int q = len - 1;  // 子字符串终止位置
   
