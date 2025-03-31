@@ -138,7 +138,6 @@ static int make_token(char *e) {
         Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
             i, rules[i].regex, position, substr_len, substr_len, substr_start);
 
-        position += substr_len;
 
         /* TODO: Now a new token is recognized with rules[i]. Add codes
           * to record the token in the array `tokens'. For certain types
@@ -160,7 +159,8 @@ static int make_token(char *e) {
         //   default: TODO();
         // }
         nr_token++;
-        break;
+        position += substr_len;
+        break;   // 阻止了接下来的匹配，让i != NR_REGEX
       }
     }
 
