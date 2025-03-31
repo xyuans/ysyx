@@ -223,16 +223,16 @@ static int get_op(int p, int q) {
 
 static uint32_t eval(int p, int q) {
   assert(p <= q);
-  char *str = tokens[p].str;
   if (p == q) {
     int value;
+    char *str = tokens[p].str;
     for (;*str != '\0'; str++) {
       if (*str < 47 || *str > 58) {
         printf("bad expression\n");
         exit(1);
       }
     }
-    sscanf(str, "%d", &value);
+    sscanf(tokens[p].str, "%d", &value);
     return value;
   }
   else if (check_parentheses(p, q)) {

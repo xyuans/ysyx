@@ -175,7 +175,7 @@ static int cmd_p(char *args) {
   uint32_t value;
   value = expr(args, &success);
   if (success == false) { return 0; };
-  printf("%u", value);
+  printf("%u\n", value);
   return 0;
 }
 
