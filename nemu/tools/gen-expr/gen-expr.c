@@ -31,11 +31,22 @@ static char *code_format =
 "  return 0; "
 "}";
 
+
+
 static void gen_rand_expr() {
   buf[0] = '\0';
+  int random_num = rand() % 3
+  switch (random_num) {
+    case 0: 
+  }
 }
 
 int main(int argc, char *argv[]) {
+  /*
+   * time_t time(time_t *timer);
+   * 获取当前的系统时间
+   * 参数timer的值可以为NULL,time()函数仍然会将当前的系统时间作为返回值。
+   * */
   int seed = time(0);
   srand(seed);
   int loop = 1;
@@ -45,14 +56,27 @@ int main(int argc, char *argv[]) {
   int i;
   for (i = 0; i < loop; i ++) {
     gen_rand_expr();
-
+    /*
+     * int sprintf(char *buffer,const char *format[,argument...]); 
+     * sprintf() 函数用于将格式化的输出存储在字符数组中，而不是写入标准输出设备
+     * */
     sprintf(code_buf, code_format, buf);
-
+    
+    /*
+     * 1. /tmp目录存放临时文 件，10天后会被清理
+     * 2. FILE *fopen(char *filename, char *mode);
+     *    "w"模式写入文件，文件不存在则会创建，存在则会覆盖之前的。
+     * */
     FILE *fp = fopen("/tmp/.code.c", "w");
     assert(fp != NULL);
     fputs(code_buf, fp);
     fclose(fp);
-
+    
+    /*
+     * int system(const char *command);
+     * 当 command 不为 NULL 时，函数成功执行命令返回 0，否则返回 -1 或其他非零值
+     * 用来执行shell命令
+     * */
     int ret = system("gcc /tmp/.code.c -o /tmp/.expr");
     if (ret != 0) continue;
 

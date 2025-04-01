@@ -174,7 +174,7 @@ static int cmd_p(char *args) {
   bool success = true;
   uint32_t value;
   value = expr(args, &success);
-  if (success == false) { return 0; };
+  if (success == false || value < 0) { return 0; };
   printf("%u\n", value);
   return 0;
 }

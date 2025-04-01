@@ -242,15 +242,15 @@ static uint32_t eval(int p, int q) {
     int op = get_op(p, q);
     int val1 = eval(p, op - 1);
     int val2 = eval(op + 1, q);
-
+    if (val1 < 0 || val2 < 0) { return -1; }
     switch (tokens[op].type) {
       case '+': return val1 + val2;
       case '-': return val1 - val2;
       case '*': return val1 * val2;
       case '/':
         if (val2 == 0) {
-          printf("bad expression\n");
-          exit(1);
+          printf("bad expression, divide 0 is happen\n");
+          return -1;
         }
         return val1 / val2;
       default: assert(0);
