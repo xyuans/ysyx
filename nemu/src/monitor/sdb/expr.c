@@ -215,7 +215,7 @@ static int get_op(int p, int q) {
     else if (tokens[p].type == '(') {
       do {
         p++;
-      } while(tokens[p].type == ')');
+      } while(tokens[p].type != ')');
     }
   }
   return op1>0 ? op1 : op2;
