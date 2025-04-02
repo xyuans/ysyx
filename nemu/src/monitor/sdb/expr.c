@@ -115,6 +115,10 @@ static int make_token(char *e) {
   nr_token = 0;     // 指示已经被识别出的token数目
 
   while (e[position] != '\0') {
+    if(e[position] == ' ') {
+      position++;
+      continue;
+    }
     /* Try all rules one by one. */
     /* 1. 用所有预定义的正则表达式规则（re 数组）尝试匹配当前位置的字符串
      * 2. int regexec(
