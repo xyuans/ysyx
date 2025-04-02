@@ -221,8 +221,9 @@ static int get_op(int p, int q) {
   return op1>0 ? op1 : op2;
 }
 
-static uint32_t eval(int p, int q) {
+static uint32_t eval(int p, int q, bool *success) {
   assert(p <= q);
+  if (*success == false) { return 0; }
   if (p == q) {
     int value;
     char *str = tokens[p].str;
@@ -236,13 +237,12 @@ static uint32_t eval(int p, int q) {
     return value;
   }
   else if (check_parentheses(p, q)) {
-    return eval(p + 1, q - 1);
+    return eval(p + 1, q - 1, success);
   }
   else {
     int op = get_op(p, q);
-    int val1 = eval(p, op - 1);
-    int val2 = eval(op + 1, q);
-    if (val1 < 0 || val2 < 0) { return -1; }
+    int val1 = eval(p, op - 1, success);
+    int val2 = eval(op + 1, q, success);
     switch (tokens[op].type) {
       case '+': return val1 + val2;
       case '-': return val1 - val2;
@@ -250,7 +250,8 @@ static uint32_t eval(int p, int q) {
       case '/':
         if (val2 == 0) {
           printf("bad expression, divide 0 is happen\n");
-          return -1;
+          *success = false;
+          return 0;
         }
         return val1 / val2;
       default: assert(0);
@@ -264,8 +265,6 @@ word_t expr(char *e, bool *success) {
     *success = false;
     return 0;
   }
- 
-
 
   /* TODO: Insert codes to evaluate the expression. */
   if (!match_parentheses(e)) {
@@ -276,5 +275,5 @@ word_t expr(char *e, bool *success) {
   int p = 0;  // 子字符串起始位置
   int q = len - 1;  // 子字符串终止位置
   
-  return eval(p, q);
+  return eval(p, q, success);
 }
