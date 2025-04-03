@@ -20,16 +20,40 @@ void am_init_monitor();
 void engine_start();
 int is_exit_status_bad();
 
+word_t expr(char *e, bool *success);
+
 int main(int argc, char *argv[]) {
   /* Initialize the monitor. */
-#ifdef CONFIG_TARGET_AM
-  am_init_monitor();
-#else
-  init_monitor(argc, argv);
-#endif
+// #ifdef CONFIG_TARGET_AM
+//   am_init_monitor();
+// #else
+//   init_monitor(argc, argv);
+// #endif
+//
+//   /* Start engine. */
+//   engine_start();
+//
+//   return is_exit_status_bad();
+ char *f = argv[1];
+ FILE *fp = fopen(f, "r");
+ assert(fp);
+ char *line = NULL;
+ char *result;
+ char *exr;
 
-  /* Start engine. */
-  engine_start();
+ bool *success = NULL;
+  *success = true;
 
-  return is_exit_status_bad();
+ uint32_t correct;
+
+ while (fgets(line, 256, fp)) {
+   result = strtok(line, "");
+   exr = strtok(NULL, "");
+
+   uint32_t value = expr(exr, success);
+   sscanf(result, "%u", &correct);
+   if (value != correct) {
+     printf("expression: %s, correct: %u, but we get:  %u", exr, correct, value);
+   }
+ } 
 }
