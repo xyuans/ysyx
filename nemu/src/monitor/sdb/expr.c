@@ -104,7 +104,7 @@ typedef struct token {
  * 1. 编译器在开启优化时，会自动删除“未被使用”的一些静态变量
  * 2. __attribute__((used))的作用是强制编译器保留某些符号
  * */
-static Token tokens[32] __attribute__((used)) = {};
+static Token tokens[64] __attribute__((used)) = {};  // 之前是32个
 static int nr_token __attribute__((used))  = 0;
 
 static int make_token(char *e) {
