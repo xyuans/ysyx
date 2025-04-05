@@ -245,7 +245,7 @@ static uint32_t eval(int p, int q, bool *success) {
   }
   else {
     int op = get_op(p, q);
-    int val1 = eval(p, op - 1, success);
+    uint32_t val1 = eval(p, op - 1, success);
     int val2 = eval(op + 1, q, success);
     switch (tokens[op].type) {
       case '+': return val1 + val2;
