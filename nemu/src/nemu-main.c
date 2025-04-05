@@ -53,9 +53,8 @@ int main(int argc, char *argv[]) {
     printf("%d expression:%s, result:%s, caculate:%u\n",i, expression, result, caculate);
   
     sscanf(result, "%d", &a);
-    printf("a:%u", a);
     if (a != caculate) {
-      printf("i\n");
+      fprintf(stderr, "i\n");
     }
     i++;
   }
