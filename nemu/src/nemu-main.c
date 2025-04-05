@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
 //   engine_start();
 //
 //   return is_exit_status_bad();
- char *f = argv[1];
+  char *f = argv[1];
  FILE *fp = fopen(f, "r");
  assert(fp);
  char *line = NULL;
@@ -47,13 +47,11 @@ int main(int argc, char *argv[]) {
  uint32_t correct;
 
  while (fgets(line, 256, fp)) {
-   result = strtok(line, "");
-   exr = strtok(NULL, "");
+   result = strtok(line, " ");
+   exr = strtok(NULL, " ");
 
    uint32_t value = expr(exr, success);
    sscanf(result, "%u", &correct);
-   if (value != correct) {
      printf("expression: %s, correct: %u, but we get:  %u", exr, correct, value);
-   }
- } 
+ }
 }
