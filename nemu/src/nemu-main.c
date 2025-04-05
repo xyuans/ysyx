@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
 //   engine_start();
 //
 //   return is_exit_status_bad();
-printf("%s,%s", argv[0], argv[1]);
+printf("%s,%s\n", argv[0], argv[1]);
  //  char *f = argv[1];
  // FILE *fp = fopen(f, "r");
  // assert(fp);
