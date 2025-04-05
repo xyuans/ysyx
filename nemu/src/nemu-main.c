@@ -35,24 +35,24 @@ int main(int argc, char *argv[]) {
 //
 //   return is_exit_status_bad();
 printf("%s,%s", argv[0], argv[1]);
-  char *f = argv[1];
- FILE *fp = fopen(f, "r");
- assert(fp);
- char *line = NULL;
- char *result;
- char *exr;
-
- bool *success = NULL;
-  *success = true;
-
- uint32_t correct;
-
- while (fgets(line, 256, fp)) {
-   result = strtok(line, " ");
-   exr = strtok(NULL, " ");
-
-   uint32_t value = expr(exr, success);
-   sscanf(result, "%u", &correct);
-     printf("expression: %s, correct: %u, but we get:  %u", exr, correct, value);
- }
+ //  char *f = argv[1];
+ // FILE *fp = fopen(f, "r");
+ // assert(fp);
+ // char *line = NULL;
+ // char *result;
+ // char *exr;
+ //
+ // bool *success = NULL;
+ //  *success = true;
+ //
+ // uint32_t correct;
+ //
+ // while (fgets(line, 256, fp)) {
+ //   result = strtok(line, " ");
+ //   exr = strtok(NULL, " ");
+ //
+ //   uint32_t value = expr(exr, success);
+ //   sscanf(result, "%u", &correct);
+ //     printf("expression: %s, correct: %u, but we get:  %u", exr, correct, value);
+ // }
 }
