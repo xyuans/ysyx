@@ -50,9 +50,10 @@ int main(int argc, char *argv[]) {
     bool success = true;
     word_t caculate = expr(expression, &success);
     int a;
-    printf("%d expression:%s, result:%s, caculate:%d\n",i, expression, result, caculate);
+    printf("%d expression:%s, result:%s, caculate:%u\n",i, expression, result, caculate);
   
     sscanf(result, "%d", &a);
+    printf("a:%u", a);
     if (a != caculate) {
       printf("i\n");
     }
