@@ -47,7 +47,8 @@ int main(int argc, char *argv[]) {
   
   bool success;
   word_t caculate = expr(expression, &success);
-  printf("caculate:%d", caculate);
+  
 
   printf("line:%s, result:%s, expression:%s\n", line, result, expression);
+  printf("caculate:%d", caculate);
 }
