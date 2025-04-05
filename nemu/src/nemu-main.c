@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
   char line[256];
   while(fgets(line, 256, fp)){;
     result = strtok(line, " ");
-    expression = strtok(NULL, " ");
+    expression = strtok(NULL, "");
 
     bool success = true;
     word_t caculate = expr(expression, &success);
