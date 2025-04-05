@@ -35,20 +35,19 @@ int main(int argc, char *argv[]) {
 
   //return is_exit_status_bad();
   printf("%s,%s\n", argv[0], argv[1]);
-  FILE *fp = fopen("test.log", "r");
+  FILE *fp = fopen(argv[1], "r");
   assert(fp);
 
+  char *result;
+  char *expression;
   char line[256];
-  char *a = fgets(line, 256, fp);
-  assert(a);
+  while(fgets(line, 256, fp)){;
+    result = strtok(line, " ");
+    expression = strtok(NULL, " ");
 
-  char *result = strtok(line, " ");
-  char *expression = strtok(NULL, " ");
+    bool success = true;
+    word_t caculate = expr("expression", &success);
 
-  bool success = true;
-  word_t caculate = expr("3+2", &success);
-
-
-  printf("line:%s, result:%s, expression:%s\n", line, result, expression);
-  printf("caculate:%d", caculate);
+    printf("expression:%s, result:%s, caculate:%d\n", expression, result, caculate);
+  }
 }
