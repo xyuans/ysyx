@@ -42,8 +42,8 @@ printf("%s,%s\n", argv[0], argv[1]);
   char *result;
   char *exr;
 
-  bool *success = NULL;
- *success = true;
+  bool success;
+ success = true;
 
   uint32_t correct;
 
@@ -51,7 +51,7 @@ printf("%s,%s\n", argv[0], argv[1]);
   result = strtok(line, " ");
   exr = strtok(NULL, " ");
 
-  uint32_t value = expr(exr, success);
+  uint32_t value = expr(exr, &success);
   sscanf(result, "%u", &correct);
     printf("expression: %s, correct: %u, but we get:  %u", exr, correct, value);
   }
