@@ -39,20 +39,19 @@ printf("%s,%s\n", argv[0], argv[1]);
   FILE *fp = fopen(f, "r");
   assert(fp);
   char line[256];
-  char *result;
-  char *exr;
 
   bool success;
  success = true;
 
-  uint32_t correct;
+//  uint32_t correct;
 
   while (fgets(line, 256, fp)) {
-  result = strtok(line, " ");
-  exr = strtok(NULL, " ");
+  char *result = strtok(line, " ");
+  char *exr = strtok(NULL, " ");
 
   uint32_t value = expr("3+2", &success);
-  sscanf(result, "%u", &correct);
-    printf("expression: %s, correct: %u, but we get:  %u", exr, correct, value);
+  //sscanf(result, "%u", &correct);
+   // printf("expression: %s, correct: %u, but we get:  %u", exr, correct, value);
+  printf("%d, exr:%s, result:%s", value, exr, result);
   }
 }
