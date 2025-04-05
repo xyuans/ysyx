@@ -138,7 +138,7 @@ static int make_token(char *e) {
       if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
         //char *substr_start = e + position;
         int substr_len = pmatch.rm_eo;
-      
+ 
         //Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
          //   i, rules[i].regex, position, substr_len, substr_len, substr_start);
 
@@ -147,7 +147,7 @@ static int make_token(char *e) {
           * to record the token in the array `tokens'. For certain types
           * of tokens, some extra actions should be performed.
           */
-        
+ 
         /*
           * 1. void *memcpy(void *dest, const void *src, size_t n);
           * */
@@ -206,20 +206,23 @@ static bool check_parentheses(int p,int q) {
   return false;
 }
 
-static int get_op(int p, int q) {
+static int get_op(int p_start, int q) {
   int op1 = -1;
   int op2 = -1;
-  for (;p != q; p++) {
-    if (tokens[p].type == '+' || tokens[p].type == '-') {
-      op1 = p;
+  for (;p_start < q; p_start++) {
+    if (tokens[p_start].type == '+' || tokens[p_start].type == '-') {
+      op1 = p_start;
     }
-    else if (tokens[p].type == '*' || tokens[p].type == '/') {
-      op2 =p;
+    else if (tokens[p_start].type == '*' || tokens[p_start].type == '/') {
+      op2 =p_start;
     }
-    else if (tokens[p].type == '(') {
-      do {
-        p++;
-      } while(tokens[p].type != ')');
+    else if (tokens[p_start].type == '(') {
+      int i = 1;
+      while(i != 0) {
+        p_start++;
+        if (tokens[p_start].type == '(') i++;
+        if (tokens[p_start].type == ')') i--;
+      }
     }
   }
   return op1>0 ? op1 : op2;
@@ -273,7 +276,8 @@ word_t expr(char *e, bool *success) {
   /* TODO: Insert codes to evaluate the expression. */
   if (!match_parentheses(e)) {
       printf("bad expression:parentheses don't match\n");
-      exit(1);
+      *success = false;
+      return 0;
   }
  
   int p = 0;  // 子字符串起始位置
