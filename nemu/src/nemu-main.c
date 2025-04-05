@@ -37,10 +37,17 @@ int main(int argc, char *argv[]) {
   printf("%s,%s\n", argv[0], argv[1]);
   FILE *fp = fopen("test.log", "r");
   assert(fp);
+
   char line[256];
   char *a = fgets(line, 256, fp);
   assert(a);
+
   char *result = strtok(line, " ");
   char *expression = strtok(NULL, " ");
-  printf("line:%s\n, result:%s, expression:%s", line, result, expression);
+  
+  bool success;
+  word_t caculate = expr(expression, &success);
+  printf("caculate:%d", caculate);
+
+  printf("line:%s, result:%s, expression:%s\n", line, result, expression);
 }
