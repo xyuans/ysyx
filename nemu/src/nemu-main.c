@@ -38,7 +38,7 @@ printf("%s,%s\n", argv[0], argv[1]);
  char *f = argv[1];
   FILE *fp = fopen(f, "r");
   assert(fp);
-  char *line = NULL;
+  char line[256];
   char *result;
   char *exr;
 
