@@ -34,24 +34,11 @@ int main(int argc, char *argv[]) {
 //   engine_start();
 //
 //   return is_exit_status_bad();
-printf("%s,%s\n", argv[0], argv[1]);
- char *f = argv[1];
-  FILE *fp = fopen(f, "r");
+  printf("%s,%s\n", argv[0], argv[1]);
+  FILE *fp = fopen("test.log", "r");
   assert(fp);
   char line[256];
-
-  bool success;
- success = true;
-
-//  uint32_t correct;
-
-  while (fgets(line, 256, fp)) {
-  char *result = strtok(line, " ");
-  char *exr = strtok(NULL, " ");
-
-  uint32_t value = expr("3+2", &success);
-  //sscanf(result, "%u", &correct);
-   // printf("expression: %s, correct: %u, but we get:  %u", exr, correct, value);
-  printf("%d, exr:%s, result:%s", value, exr, result);
-  }
+  char *a = fgets(line, 256, fp);
+  assert(a);
+  printf("%s\n", line);
 }
