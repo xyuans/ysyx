@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
   
     sscanf(result, "%d", &a);
     if (a != caculate) {
-      fprintf(stderr, "i\n");
+      fprintf(stderr, "i expression is error: %d\n", i);
     }
     i++;
   }
