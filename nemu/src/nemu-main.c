@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
     expression = strtok(NULL, " ");
 
     bool success = true;
-    word_t caculate = expr("expression", &success);
+    word_t caculate = expr(expression, &success);
 
     printf("expression:%s, result:%s, caculate:%d\n", expression, result, caculate);
   }
