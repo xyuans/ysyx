@@ -40,5 +40,7 @@ int main(int argc, char *argv[]) {
   char line[256];
   char *a = fgets(line, 256, fp);
   assert(a);
-  printf("%s\n", line);
+  char *result = strtok(line, " ");
+  char *expression = strtok(NULL, " ");
+  printf("line:%s\n, result:%s, expression:%s", line, result, expression);
 }
