@@ -31,24 +31,24 @@ int main(int argc, char *argv[]) {
 #endif
 
   /* Start engine. */
-  engine_start();
+  //engine_start();
 
-  return is_exit_status_bad();
-  // printf("%s,%s\n", argv[0], argv[1]);
-  // FILE *fp = fopen("test.log", "r");
-  // assert(fp);
-  //
-  // char line[256];
-  // char *a = fgets(line, 256, fp);
-  // assert(a);
-  //
-  // char *result = strtok(line, " ");
-  // char *expression = strtok(NULL, " ");
-  //
-  // bool success = true;
-  // word_t caculate = expr("3+2", &success);
-  //
-  //
-  // printf("line:%s, result:%s, expression:%s\n", line, result, expression);
-  // printf("caculate:%d", caculate);
+  //return is_exit_status_bad();
+  printf("%s,%s\n", argv[0], argv[1]);
+  FILE *fp = fopen("test.log", "r");
+  assert(fp);
+
+  char line[256];
+  char *a = fgets(line, 256, fp);
+  assert(a);
+
+  char *result = strtok(line, " ");
+  char *expression = strtok(NULL, " ");
+
+  bool success = true;
+  word_t caculate = expr("3+2", &success);
+
+
+  printf("line:%s, result:%s, expression:%s\n", line, result, expression);
+  printf("caculate:%d", caculate);
 }
