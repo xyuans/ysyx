@@ -41,6 +41,8 @@ int main(int argc, char *argv[]) {
   char *result;
   char *expression;
   char line[256];
+
+  int i = 1;
   while(fgets(line, 256, fp)){;
     result = strtok(line, " ");
     expression = strtok(NULL, "\n");
@@ -48,6 +50,7 @@ int main(int argc, char *argv[]) {
     bool success = true;
     word_t caculate = expr(expression, &success);
 
-    printf("expression:%s, result:%s, caculate:%d\n", expression, result, caculate);
+    printf("%d expression:%s, result:%s, caculate:%d\n",i, expression, result, caculate);
   }
+  i++;
 }
