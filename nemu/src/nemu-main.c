@@ -24,31 +24,31 @@ word_t expr(char *e, bool *success);
 
 int main(int argc, char *argv[]) {
   /* Initialize the monitor. */
-// #ifdef CONFIG_TARGET_AM
-//   am_init_monitor();
-// #else
-//   init_monitor(argc, argv);
-// #endif
-//
-//   /* Start engine. */
-//   engine_start();
-//
-//   return is_exit_status_bad();
-  printf("%s,%s\n", argv[0], argv[1]);
-  FILE *fp = fopen("test.log", "r");
-  assert(fp);
+#ifdef CONFIG_TARGET_AM
+  am_init_monitor();
+#else
+  init_monitor(argc, argv);
+#endif
 
-  char line[256];
-  char *a = fgets(line, 256, fp);
-  assert(a);
+  /* Start engine. */
+  engine_start();
 
-  char *result = strtok(line, " ");
-  char *expression = strtok(NULL, " ");
-  
-  bool success = true;
-  word_t caculate = expr("3+2", &success);
-  
-
-  printf("line:%s, result:%s, expression:%s\n", line, result, expression);
-  printf("caculate:%d", caculate);
+  return is_exit_status_bad();
+  // printf("%s,%s\n", argv[0], argv[1]);
+  // FILE *fp = fopen("test.log", "r");
+  // assert(fp);
+  //
+  // char line[256];
+  // char *a = fgets(line, 256, fp);
+  // assert(a);
+  //
+  // char *result = strtok(line, " ");
+  // char *expression = strtok(NULL, " ");
+  //
+  // bool success = true;
+  // word_t caculate = expr("3+2", &success);
+  //
+  //
+  // printf("line:%s, result:%s, expression:%s\n", line, result, expression);
+  // printf("caculate:%d", caculate);
 }
