@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
 
   //return is_exit_status_bad();
   printf("%s,%s\n", argv[0], argv[1]);
-  FILE *fp = fopen(argv[1], "r");
+  FILE *fp = fopen("test.log", "r");
   assert(fp);
 
   char *result;
