@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
   char *result = strtok(line, " ");
   char *expression = strtok(NULL, " ");
   
-  bool success;
+  bool success = true;
   word_t caculate = expr(expression, &success);
   
 
