@@ -229,7 +229,7 @@ static int get_op(int p_start, int q) {
 }
 
 static int eval(int p, int q, bool *success) {
-  assert(p <= q);
+  if (p > q) { *success = false; }
   if (*success == false) { return 0; }
   if (p == q) {
     int value;
@@ -237,7 +237,7 @@ static int eval(int p, int q, bool *success) {
     for (;*str != '\0'; str++) {
       if (*str < 47 || *str > 58) {
         printf("bad expression\n");
-        exit(1);
+        *success = false;
       }
     }
     sscanf(tokens[p].str, "%d", &value);
@@ -261,7 +261,10 @@ static int eval(int p, int q, bool *success) {
           return 0;
         }
         return val1 / val2;
-      default: assert(0);
+      default: 
+        printf("bad expression\n");
+        *success = false;
+        return 0;
     }    
   }
 }
