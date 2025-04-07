@@ -228,7 +228,7 @@ static int get_op(int p_start, int q) {
   return op1>0 ? op1 : op2;
 }
 
-static uint32_t eval(int p, int q, bool *success) {
+static int eval(int p, int q, bool *success) {
   assert(p <= q);
   if (*success == false) { return 0; }
   if (p == q) {
@@ -248,7 +248,7 @@ static uint32_t eval(int p, int q, bool *success) {
   }
   else {
     int op = get_op(p, q);
-    uint32_t val1 = eval(p, op - 1, success);
+    int val1 = eval(p, op - 1, success);
     int val2 = eval(op + 1, q, success);
     switch (tokens[op].type) {
       case '+': return val1 + val2;

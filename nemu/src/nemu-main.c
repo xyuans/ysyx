@@ -41,13 +41,13 @@ int main(int argc, char *argv[]) {
   char *result;
   char *expression;
   char line[256];
+  bool success = true;
 
   int i = 1;
   while(fgets(line, 256, fp)){;
     result = strtok(line, " ");
     expression = strtok(NULL, "\n");
 
-    bool success = true;
     word_t caculate = expr(expression, &success);
     int a;
     printf("%d expression:%s, result:%s, caculate:%u\n",i, expression, result, caculate);
