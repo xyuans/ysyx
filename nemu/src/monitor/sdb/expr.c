@@ -265,7 +265,7 @@ static int eval(int p, int q, bool *success) {
         printf("bad expression\n");
         *success = false;
         return 0;
-    }    
+    }
   }
 }
 

@@ -44,7 +44,8 @@ int main(int argc, char *argv[]) {
   bool success = true;
 
   int i = 1;
-  while(fgets(line, 256, fp)){;
+  while(fgets(line, 256, fp)){
+    success = true;
     result = strtok(line, " ");
     expression = strtok(NULL, "\n");
 
@@ -54,7 +55,7 @@ int main(int argc, char *argv[]) {
   
     sscanf(result, "%d", &a);
     if (a != caculate) {
-      fprintf(stderr, "i expression is error: %d\n", i);
+      fprintf(stderr, "%d expression is error\n", i);
     }
     i++;
   }
