@@ -21,6 +21,14 @@
 #if   defined(CONFIG_PMEM_MALLOC)
 static uint8_t *pmem = NULL;
 #else // CONFIG_PMEM_GARRAY
+/*
+ * 1. 一个程序的内存分为几个部分：
+ *    代码段（text）、数据段（data、bss）、堆（heap）和栈（stack）
+ * 2. .date段存储初始化的全局变量和静态变量，
+ *    .bss段存储未初始化的全局变量和静态变量。
+ *    .bss,.date,.text和堆一样没有人为大小的限定。
+ * 3. 栈只有8MB在ubuntu中。
+ * */
 static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 #endif
 
@@ -47,6 +55,7 @@ static void out_of_bound(paddr_t addr) {
 /*
  * 1. 代码实际执行endif部分
  * 2. void *meset(void *s, int c, unsigned long n); 将s指向的内存的前n字节用c来替代。
+ *    虽然c是int型，会保留0-255,即一个字节
  * 3. CONFIG_MSIZE=0x8000000, 128MB.
  * */
 void init_mem() {
