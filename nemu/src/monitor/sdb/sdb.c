@@ -17,6 +17,7 @@
 #include <cpu/cpu.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <memory/vaddr.h>
 #include "sdb.h"
 
 static int is_batch_mode = false;
@@ -60,7 +61,7 @@ static char* rl_gets() {
 static int string_to_number(const char *str) {
 	unsigned int number = 0;
 	for(;*str != '\0';str++) {
-		if (*str<48 || *str>57) {
+		if (*str<48 || *str>57) {// 
 			return -1;  // 字符串不是大于0的整数的整数
 		};
 		number = number * 10 + (*str) - 48; 
@@ -87,6 +88,8 @@ static int cmd_info(char *args);
 
 static int cmd_p(char *args);
 
+static int cmd_x(char *args);
+
 static struct {
   const char *name;
   const char *description;
@@ -111,7 +114,12 @@ static struct {
     "p",
     "evaluate expression",
     cmd_p
-  }
+  },
+  {
+    "x",
+    "print memory",
+    cmd_x,
+  },
 };
  
 #define NR_CMD ARRLEN(cmd_table)
@@ -160,7 +168,7 @@ static int cmd_si(char *args) {
 static int cmd_info(char *args) {
   char *arg = strtok(args, " ");
   if (args == NULL) {
-    printf("info r -- print register\ninfo w -- print watchpoint\n");
+    printf("info r  -- print register\ninfo w  -- print watchpoint\n");
     return 0;
   }
   if (*arg == 'r') {
@@ -171,11 +179,46 @@ static int cmd_info(char *args) {
 }
 
 static int cmd_p(char *args) {
+  if (args == NULL) {
+    printf("p expression  -- evaluate expression\n");
+    return 0;
+  }
   bool success = true;
   uint32_t value;
   value = expr(args, &success);
   if (success == false || value < 0) { return 0; };
   printf("%u\n", value);
+  return 0;
+}
+
+static int cmd_x(char *args) {
+  if (args == NULL) {
+    printf("x expression  -- print memort\n");
+    return 0;
+  }
+
+  char *number = strtok(args, " ");
+  char *expression = strtok(NULL, " ");
+
+  int N = string_to_number(number);
+  assert(N<1000);
+  if (N == -1) {
+    printf("after x is not a vaild number\n");
+    return 0;
+  }
+  bool success = true;
+  uint32_t addr;
+
+  addr = expr(expression, &success);
+ 
+  if (addr < CONFIG_MBASE || addr - CONFIG_MBASE > CONFIG_MSIZE) {
+    printf("invaild address\n");
+    success = false;
+  }
+  if (success == false || addr < 0) { return 0; }
+  for (int i = 0; i < N; i++) {
+     printf("0x%02x\n", vaddr_read(addr+i, 1));
+  }
   return 0;
 }
 
