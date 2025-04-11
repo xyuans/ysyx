@@ -34,28 +34,23 @@ int main(int argc, char *argv[]) {
   engine_start();
 
   return is_exit_status_bad();
-  // FILE *fp = fopen("test.log", "r");
-  // assert(fp);
-  //
-  // char *result;
-  // char *expression;
-  // char line[256];
-  // bool success = true;
-  //
-  // int i = 1;
-  // while(fgets(line, 256, fp)){
-  //   success = true;
-  //   result = strtok(line, " ");
-  //   expression = strtok(NULL, "\n");
-  //
-  //   word_t caculate = expr(expression, &success);
-  //   int a;
-  //   printf("%d expression:%s, result:%s, caculate:%u\n",i, expression, result, caculate);
-  //
-  //   sscanf(result, "%d", &a);
-  //   if (a != caculate) {
-  //     fprintf(stderr, "%d expression is error\n", i);
-  //   }
-  //   i++;
-  // }
+/*  printf("%s,%s\n", argv[0], argv[1]);*/
+/*  FILE *fp = fopen("test.log", "r");*/
+/*  assert(fp);*/
+
+/*  char *result;*/
+/*  char *expression;*/
+/*  char line[256];*/
+
+/*  int i = 1;*/
+/*  while(fgets(line, 256, fp)){;*/
+/*    result = strtok(line, " ");*/
+/*    expression = strtok(NULL, "\n");*/
+
+/*    bool success = true;*/
+/*    word_t caculate = expr(expression, &success);*/
+
+/*    printf("%d expression:%s, result:%s, caculate:%d\n",i, expression, result, caculate);*/
+/*  }*/
+/*  i++;*/
 }
