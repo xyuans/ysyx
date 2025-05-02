@@ -23,7 +23,6 @@
 static int is_batch_mode = false;
 
 void init_regex();
-void init_wp_pool();
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
@@ -90,6 +89,12 @@ static int cmd_p(char *args);
 
 static int cmd_x(char *args);
 
+static int cmd_w(char *args);
+
+static int cmd_d(char *args);
+
+//static int cmd_d(char *args);
+
 static struct {
   const char *name;
   const char *description;
@@ -120,6 +125,16 @@ static struct {
     "print memory",
     cmd_x,
   },
+  {
+    "w",
+    "set watchpoint",
+    cmd_w,
+  },
+  {
+    "d",
+    "delete watchpoint",
+    cmd_d,
+  }
 };
  
 #define NR_CMD ARRLEN(cmd_table)
@@ -166,39 +181,45 @@ static int cmd_si(char *args) {
 }
 
 static int cmd_info(char *args) {
-  char *arg = strtok(args, " ");
-  if (args == NULL) {
+  char *argument = strtok(args, " ");
+  if (argument == NULL) {
     printf("info r  -- print register\ninfo w  -- print watchpoint\n");
     return 0;
   }
-  if (*arg == 'r') {
+  if (*argument == 'r') {
     isa_reg_display();
     return 0;
   }
+  else if(*argument == 'w') {
+    print_wps();
+    return 0;
+  }
+  printf("invaild argument.\n");
   return 0;
 }
 
 static int cmd_p(char *args) {
-  if (args == NULL) {
+  char *arg = strtok(args, " ");
+  if (arg == NULL) {
     printf("p expression  -- evaluate expression\n");
     return 0;
   }
   bool success = true;
   uint32_t value;
-  value = expr(args, &success);
+  value = expr(arg, &success);
   if (success == false || value < 0) { return 0; };
   printf("%u\n", value);
   return 0;
 }
 
 static int cmd_x(char *args) {
-  if (args == NULL) {
-    printf("x expression  -- print memort\n");
-    return 0;
-  }
 
   char *number = strtok(args, " ");
   char *expression = strtok(NULL, " ");
+  if (expression == NULL) {
+    printf("x N expression  -- print memort\n");
+    return 0;
+  }
 
   int N = string_to_number(number);
   assert(N<1000);
@@ -217,8 +238,34 @@ static int cmd_x(char *args) {
   }
   if (success == false || addr < 0) { return 0; }
   for (int i = 0; i < N; i++) {
-     printf("0x%02x\n", vaddr_read(addr+i, 1));
+     printf("0x%8x\n", vaddr_read(addr+i, 4));
   }
+  return 0;
+}
+
+static int cmd_w(char *args) {
+  char *arg = strtok(args, " ");
+  if (arg == NULL) {
+    printf("w expression  -- set watchpoint\n");
+    return 0;
+  }
+
+  new_wp(arg);
+  return 0;
+}
+
+static int cmd_d(char *args) {
+  char *arg = strtok(args, " ");
+  if (arg == NULL) {
+    printf("d N  -- delete N watchpoint\n");
+    return 0;
+  }
+  int NO = string_to_number(arg);
+  if (NO < 0 || NO > 31) {
+    printf("number is error\n");
+    return 0;
+  }
+  free_wp(NO);
   return 0;
 }
 
@@ -231,7 +278,6 @@ void sdb_mainloop() {
     cmd_c(NULL);
     return;
   }
-
   for (char *str; (str = rl_gets()) != NULL; ) {         // 读取用户输入
 	/*
 	 * strlen()函数用来计算字符串长度，不包括/0.
