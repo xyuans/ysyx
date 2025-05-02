@@ -18,13 +18,6 @@
 
 #include <common.h>
 
-void init_wp_pool();
-void print_wps();
-void new_wp(char *e);
-void free_wp(int NO);
-
 word_t expr(char *e, bool *success);
-//void new_wp(char *e);
-//void free_wp(WP *wp);
-//UPL *get_wpl();
+
 #endif

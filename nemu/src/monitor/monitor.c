@@ -113,10 +113,6 @@ void init_monitor(int argc, char *argv[]) {
   init_log(log_file);
 
   /* Initialize memory. */
-  /*
-   * riscv32的物理地址从0x80_000_000开始
-   * 内存范围从0x80_000_000至0x88_000_000,共128M内存
-   * */
   init_mem();
   
   /*

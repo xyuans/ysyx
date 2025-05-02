@@ -14,7 +14,7 @@
 ***************************************************************************************/
 #include <string.h>
 #include <isa.h>
-#include <memory/vaddr.h>
+
 /* We use the POSIX regex functions to process regular expressions.
  * Type 'man regex' for more information about POSIX regex functions.
  */
@@ -34,15 +34,10 @@
  *  */
 enum {
   TK_NOTYPE = 256,
-  TK_EQ,
+  TK_EQ = 128,
 
   /* TODO: Add more token types */
-  TK_NUM,
-  TK_UEQ,
-  TK_AND,
-  TK_REG,
-  TK_DNUM,
-  TK_DEREF,
+  TK_NUM
 };
 
 /*
@@ -60,8 +55,7 @@ static struct rule {
    */
 
   {" +",    TK_NOTYPE},    // spaces
-  {"==",    TK_EQ},        // equal 
-  {"0x[a-fA-F0-9]+", TK_DNUM},
+  {"==",    TK_EQ},        // equal
   {"[0-9]+",  TK_NUM},       // number
   {"\\+",   '+'},          // plus
   {"-",     '-'},
@@ -69,9 +63,6 @@ static struct rule {
   {"/",     '/'},
   {"\\(",   '('},
   {"\\)",   ')'},
-  {"!=",    TK_UEQ},
-  {"&&",    TK_AND},
-  {"\\$[a-z0-9]+",  TK_REG},
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -145,11 +136,11 @@ static int make_token(char *e) {
      * */
     for (i = 0; i < NR_REGEX; i ++) {
       if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
-        char *substr_start = e + position;
+        //char *substr_start = e + position;
         int substr_len = pmatch.rm_eo;
  
-        Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
-            i, rules[i].regex, position, substr_len, substr_len, substr_start);
+        //Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
+         //   i, rules[i].regex, position, substr_len, substr_len, substr_start);
 
 
         /* TODO: Now a new token is recognized with rules[i]. Add codes
@@ -215,81 +206,41 @@ static bool check_parentheses(int p,int q) {
   return false;
 }
 
-static int get_op(int p, int q) {
-  /*优先级越高，数字越小*/
+static int get_op(int p_start, int q) {
   int op1 = -1;
   int op2 = -1;
-  int op3 = -1;
-  int op4 = -1;
-  int op5 = -1;
-  for (;p < q; p++) {
-    switch (tokens[p].type) {
-      case TK_DEREF: 
-        op1 = p;
-        break;
-      case '*':case '/':
-        op2 = p;
-        break;
-      case '+':case '-':
-        op3 = p;
-        break;
-      case TK_EQ:case TK_UEQ:
-        op4 = p;
-        break;
-      case TK_AND:
-        op5 = p;
-        break;
-      case '(':
-        int i = 1;
-        while(i != 0) {
-          p++;
-          if (tokens[p].type == '(') i++;
-          if (tokens[p].type == ')') i--;
-        }
-        break;
-      default: break;
-    } 
+  for (;p_start < q; p_start++) {
+    if (tokens[p_start].type == '+' || tokens[p_start].type == '-') {
+      op1 = p_start;
+    }
+    else if (tokens[p_start].type == '*' || tokens[p_start].type == '/') {
+      op2 =p_start;
+    }
+    else if (tokens[p_start].type == '(') {
+      int i = 1;
+      while(i != 0) {
+        p_start++;
+        if (tokens[p_start].type == '(') i++;
+        if (tokens[p_start].type == ')') i--;
+      }
+    }
   }
-  if (op5 > -1) { return op5; }
-  else if (op4 > -1) { return op4; }
-  else if (op3 > -1) { return op3; }
-  else if (op2 > -1) { return op2; }
-  else if (op1 > -1) { return op1; }
-  else {
-    printf("bad expression\n");
-    return -1;
-  }
+  return op1>0 ? op1 : op2;
 }
 
-static long eval(int p, int q, bool *success) {
+static int eval(int p, int q, bool *success) {
+  if (p > q) { *success = false; }
   if (*success == false) { return 0; }
-  if (p > q) {
-    *success = false;
-    printf("bad expression\n");
-    return 0;
-  }
   if (p == q) {
-    long value;
-    if (tokens[p].type == TK_REG) {
-      value = isa_reg_str2val(tokens[p].str, success);
-      if (*success == false) {
-        printf("bad expression: about register name\n");
+    int value;
+    char *str = tokens[p].str;
+    for (;*str != '\0'; str++) {
+      if (*str < 47 || *str > 58) {
+        printf("bad expression\n");
+        *success = false;
       }
     }
-    else if (tokens[p].type == TK_DNUM) {
-      sscanf(tokens[p].str+2, "%lx", &value);
-    }
-    else {
-      char *str = tokens[p].str;
-      for (;*str != '\0'; str++) {
-        if (*str < 47 || *str > 58) {
-          printf("bad expression\n");
-          *success = false;
-          return 0;
-        }
-      }
-      sscanf(tokens[p].str, "%ld", &value);
-    }
+    sscanf(tokens[p].str, "%d", &value);
     return value;
   }
   else if (check_parentheses(p, q)) {
@@ -297,15 +248,8 @@ static long eval(int p, int q, bool *success) {
   }
   else {
     int op = get_op(p, q);
-    if (op == -1) {
-      *success = false;
-      return 0;
-    }
-    long val1 = 0;
-    if (p < op) {
-      val1 = eval(p, op - 1, success);
-    }
-    long val2 = eval(op + 1, q, success);
+    int val1 = eval(p, op - 1, success);
+    int val2 = eval(op + 1, q, success);
     switch (tokens[op].type) {
       case '+': return val1 + val2;
       case '-': return val1 - val2;
@@ -317,16 +261,6 @@ static long eval(int p, int q, bool *success) {
           return 0;
         }
         return val1 / val2;
-      case TK_DEREF: 
-        if (val2 < CONFIG_MBASE || val2 - CONFIG_MBASE > CONFIG_MSIZE) {
-          *success = false;
-          printf("bad expression: invaild address\n");
-          return 0;
-        }
-        return vaddr_read(val2, 4);
-      case TK_EQ: return val1 == val2;
-      case TK_UEQ: return val1 != val2;
-      case TK_AND: return val1 && val2;
       default: 
         printf("bad expression\n");
         *success = false;
@@ -334,7 +268,6 @@ static long eval(int p, int q, bool *success) {
     }
   }
 }
-
 
 word_t expr(char *e, bool *success) {
   int len = make_token(e);
@@ -349,25 +282,9 @@ word_t expr(char *e, bool *success) {
       *success = false;
       return 0;
   }
-   
+ 
   int p = 0;  // 子字符串起始位置
   int q = len - 1;  // 子字符串终止位置
-  
-  if (tokens[0].type == '*') { tokens[0].type = TK_DEREF; }
-  for (int i = 1; i < len; i++) {
-    if (tokens[i].type == '*') {
-      switch(tokens[i-1].type){
-        case '+':
-        case '-':
-        case '*':
-        case '/':
-        case '(':
-          tokens[i].type = TK_DEREF;
-          break;
-        default: break;
-      }
-    }
-  }
   
   return eval(p, q, success);
 }
