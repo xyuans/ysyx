@@ -238,7 +238,7 @@ static int cmd_x(char *args) {
   }
   if (success == false || addr < 0) { return 0; }
   for (int i = 0; i < N; i++) {
-     printf("0x%8x: 0x%08x\n", addr+i*4, vaddr_read(addr+i*4, 4));
+     printf("0x%02x\n", vaddr_read(addr+i, 1));
   }
   return 0;
 }
