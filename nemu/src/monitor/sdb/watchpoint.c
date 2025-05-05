@@ -28,26 +28,31 @@ typedef struct watchpoint {
   uint32_t current_value;
 } WP;
 
+// 改为使用更丰富的链表
 typedef struct UsedPointList {
   int count;
   WP *head;
 }UPL;
 
 static WP wp_pool[NR_WP] = {};
-static WP *free_ = NULL;
-static UPL usd_wpl = {}; 
+static WP *free_ = NULL;    // 删除原来使用链表头节点
+static UPL usd_wpl = {};
 
 void init_wp_pool() {
   int i;
+  // 创建链表结构
   for (i = 0; i < NR_WP; i ++) {
     wp_pool[i].NO = i;
     wp_pool[i].next = (i == NR_WP - 1 ? NULL : &wp_pool[i + 1]);
   }
-
+  
+  // 初始化free_
   free_ = &wp_pool[0];
 }
 
 /* TODO: Implement the functionality of watchpoint */
+
+// 在头部插入节点,释放free_头节点
 void new_wp(char *e) {
   assert(usd_wpl.count < NR_WP);
 
@@ -68,6 +73,7 @@ void new_wp(char *e) {
   strncpy(usd_wpl.head->expression, e, EXP_MAX-1);
 }
 
+// 释放指定节点，在free_头插入
 void free_wp(int NO) {
   if (usd_wpl.count == 0) {
     return;
@@ -78,7 +84,7 @@ void free_wp(int NO) {
   /*只有一个节点的情况*/
   if (usd_wpl.head->NO == NO) {
      wp_pool[NO].next = free_;  // 释放的节点指向原来的头节点
-     free_ = &wp_pool[NO];      // 改变头节点指向
+     free_ = &wp_pool[NO];      // 改变free_头节点指向
      usd_wpl.count--;
      usd_wpl.head = usd_wpl.head->next;
      return;
@@ -99,6 +105,7 @@ void free_wp(int NO) {
   }
 }
 
+// 比较监视点当前值与之前的值
 int check_wps() {
   bool success = true;
   
@@ -121,6 +128,8 @@ int check_wps() {
   return 0;
 }
 
+
+// 打印监视点
 void print_wps() {
   int count = usd_wpl.count;
   WP *current_wp = usd_wpl.head;
