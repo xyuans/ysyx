@@ -199,13 +199,14 @@ static int cmd_info(char *args) {
 }
 
 static int cmd_p(char *args) {
-  if (args == NULL) {
+  char *arg = strtok(args, " ");
+  if (arg == NULL) {
     printf("p expression  -- evaluate expression\n");
     return 0;
   }
   bool success = true;
   uint32_t value;
-  value = expr(args, &success);
+  value = expr(arg, &success);
   if (success == false || value < 0) { return 0; };
   printf("%u\n", value);
   return 0;
