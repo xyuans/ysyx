@@ -24,6 +24,8 @@
 typedef struct Decode {
   vaddr_t pc;
   // 表示基于当前指令类型预测的下一条指令地址
+  // 对于顺序指令（如普通算术指令），snpc = pc + 指令长度。
+  // 对于分支指令（如 jump、branch），snpc 可能是分支目标地址或顺序地址（具体取决于静态预测策略）
   vaddr_t snpc; // static next pc
   // 表示实际执行后的下一条指令地址。
   vaddr_t dnpc; // dynamic next pc
