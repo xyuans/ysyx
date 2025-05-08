@@ -23,7 +23,7 @@
 #define Mw vaddr_write
 
 enum {
-  TYPE_I, TYPE_U, TYPE_S,
+  TYPE_I, TYPE_U, TYPE_S, TYPE_J,
   TYPE_N, // none
 };
 
@@ -43,7 +43,7 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
     case TYPE_I: src1R();          immI(); break;
     case TYPE_U:                   immU(); break;
     case TYPE_S: src1R(); src2R(); immS(); break;
-//    case TYPE_J:                   immJ(); break;
+    case TYPE_J:                   immJ(); break;
     case TYPE_N: break;
     default: panic("unsupported type = %d", type);
   }
@@ -62,8 +62,8 @@ static int decode_exec(Decode *s) {
 
   INSTPAT_START();
   INSTPAT("??????? ????? ????? ??? ????? 00101 11", auipc  , U, R(rd) = s->pc + imm);
-  //INSTPAT("??????? ????? ????? ??? ????? 11011 11", jal    , J, R(rd) = s->pc + 4;
-  //                                                              s->dnpc = s->pc + imm;)  // me
+  INSTPAT("??????? ????? ????? ??? ????? 11011 11", jal    , J, R(rd) = s->pc + 4;
+                                                                s->dnpc = s->pc + imm);  // me
   INSTPAT("??????? ????? ????? ??? ????? 11001 11", jalr   , I, R(rd) = s->pc + 4;
                                                                 s->dnpc = R(src1) + imm);  // me
   INSTPAT("??????? ????? ????? 100 ????? 00000 11", lbu    , I, R(rd) = Mr(src1 + imm, 1));
