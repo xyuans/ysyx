@@ -55,7 +55,7 @@ int strcmp(const char *s1, const char *s2) {
   size_t i = 0;
   int cmp;
 
-  while(s1[i] != '0' || s2[i] != '0') {
+  while(s1[i] != '\0' || s2[i] != '\0') {
     cmp = s1[i] - s2[i];
     if (cmp != 0) break;
     i++;
@@ -68,7 +68,7 @@ int strncmp(const char *s1, const char *s2, size_t n) {
   size_t i = 0;
   int cmp;
 
-  while(i < n && (s1[i] != '0' || s2[i] != '0')) {
+  while(i < n && (s1[i] != '\0' || s2[i] != '\0')) {
     cmp = s1[i] - s2[i];
     if (cmp != 0) break;
     i++;
