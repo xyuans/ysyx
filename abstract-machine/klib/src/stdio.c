@@ -25,10 +25,18 @@ int sprintf(char *out, const char *fmt, ...) {
       switch (*fmt) {
         case 'd':
           int num = va_arg(args, int);
+          char buf[16] = {0};
+          int i;
+
           if (num < 0) *out++ = '-';
-          while (num != 0) {
-            *out++ = (num % 10) + 48;
+          
+          for (i = 0; num != 0; i++) {
+            buf[i] = (num % 10) +48;
             num /= 10;
+          }
+
+          for(; i >= 0; i--) {
+            *out++ = buf[i];
           }
           break;
         case 's':
