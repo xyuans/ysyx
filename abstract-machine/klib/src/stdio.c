@@ -49,6 +49,7 @@ int sprintf(char *out, const char *fmt, ...) {
     }
   }
   
+  *out = '\0';
   return (int)out - (int)start;
 }
 
