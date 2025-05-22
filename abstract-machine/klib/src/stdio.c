@@ -50,7 +50,7 @@ int sprintf(char *out, const char *fmt, ...) {
   }
   
   *out = '\0';
-  return (int)out - (int)start;
+  return (long int)out - (long int)start;
 }
 
 int snprintf(char *out, size_t n, const char *fmt, ...) {
