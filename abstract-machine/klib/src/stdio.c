@@ -35,7 +35,7 @@ int sprintf(char *out, const char *fmt, ...) {
             num /= 10;
           }
 
-          for(; i >= 0; i--) {
+          for(i--; i >= 0; i--) {
             *out++ = buf[i];
           }
           break;
