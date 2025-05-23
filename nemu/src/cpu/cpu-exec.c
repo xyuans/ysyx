@@ -46,7 +46,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
     int cur = _this->iringbuf.cur + 1;
     int i;
     for (i = 0; i < 15; i++) {
-      printf("%3s\n", _this->iringbuf.buf[cur]);
+      printf("   %s\n", _this->iringbuf.buf[cur]);
       cur = (cur + 1) % 16;
     }
     printf("-->%s\n", _this->iringbuf.buf[cur]);
