@@ -17,7 +17,7 @@
 #include <cpu/decode.h>
 #include <cpu/difftest.h>
 #include <locale.h>
-
+#include <string.h>
 /* The assembly code of instructions executed is only output to the screen
  * when the number of instructions executed is less than this value.
  * This is useful when you use the `si' command.
@@ -40,6 +40,18 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
+
+#ifdef CONFIG_ITRACE
+  if (nemu_state.halt_ret != 0) {
+    int cur = _this->iringbuf.cur + 1;
+    int i;
+    for (i = 0; i < 15; i++) {
+      printf("%3s", _this->iringbuf.buf[cur]);
+      cur = (cur + 1) % 16;
+    }
+    printf("-->%s", _this->iringbuf.buf[cur]);
+  }
+#endif
 
 #ifdef CONFIG_WATCHPOINT
   if (check_wps()) {
@@ -76,6 +88,10 @@ static void exec_once(Decode *s, vaddr_t pc) {
   void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
   disassemble(p, s->logbuf + sizeof(s->logbuf) - p,
       MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc), (uint8_t *)&s->isa.inst, ilen);
+  
+  int cur = (s->iringbuf.cur + 1) % 16;
+  s->iringbuf.cur = cur;
+  strncpy(s->iringbuf.buf[cur], s->logbuf, 127);
 #endif
 }
 
