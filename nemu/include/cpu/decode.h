@@ -33,8 +33,10 @@ typedef struct Decode {
   // 表示实际执行后的下一条指令地址。
   vaddr_t dnpc; // dynamic next pc
   ISADecodeInfo isa;        // 保存指令集架构（ISA）相关的解码信息，如操作码、操作数、寄存器索引、立即数等。
-  IFDEF(CONFIG_ITRACE, char logbuf[128]);    // 指令执行日志缓冲区
-  IFDEF(CONFIG_ITRACE, RingBuf iringbuf);
+  //IFDEF(CONFIG_ITRACE, char logbuf[128]);    // 指令执行日志缓冲区
+  //IFDEF(CONFIG_ITRACE, RingBuf iringbuf);
+  char logbuf[128];
+  RingBuf iringbuf;
 } Decode;
 
 // --- pattern matching mechanism ---
