@@ -49,10 +49,11 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   int fun_num = 0;;
   //011011_11
   if ((_this->isa.inst & 0xff) == 0x6f){   // 0x6f=11011_11
+  	printf("get it\n");
   	for (int i = 0; i < symlist.count; i++) {
   		if (_this->dnpc == symlist.list[i].addr) {
   			fun_num++;
-  			printf("%3dcall [%s@addr:%d]", fun_num, symlist.list[i].name,\
+  			printf("%3dall [%s@addr:%u]\n", fun_num, symlist.list[i].name,\
   				   symlist.list[i].addr);
   		}
   	}
@@ -60,7 +61,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   
     //00001_000_00000_1100111   0x08067 为 ret指令
     if ((_this->isa.inst & 0xfffff) == 0x8067) {
-		printf("%3dret [@addr:%d]", fun_num, _this->dnpc);
+		printf("%3dret [@addr:%u]\n", fun_num, _this->dnpc);
     }
 
   // iringbuf

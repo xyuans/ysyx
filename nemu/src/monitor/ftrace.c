@@ -26,7 +26,6 @@ void ftrace_init(char *filename) {
 	
 	fd = open(filename, O_RDONLY);
 	if (fd < 0) {
-		printf("fd:%d\n", fd);
 		perror("open");
 		exit(-1);
 	}
