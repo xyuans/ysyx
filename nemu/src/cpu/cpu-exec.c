@@ -48,7 +48,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_TRACE
   int fun_num = 0;;
   //011011_11
-  if ((_this->isa.inst & 0xff) == 0x6f){   // 0x6f=11011_11
+  if ((_this->isa.inst & 0x7f) == 0x6f){   // 0x6f=11011_11
   	printf("get it\n");
   	for (int i = 0; i < symlist.count; i++) {
   		if (_this->dnpc == symlist.list[i].addr) {
