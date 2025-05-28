@@ -18,12 +18,16 @@
 #include <cpu/difftest.h>
 #include <locale.h>
 #include <string.h>
+#include <monitor/ftrace.h>
 /* The assembly code of instructions executed is only output to the screen
  * when the number of instructions executed is less than this value.
  * This is useful when you use the `si' command.
  * You can modify this value as you want.
  */
 #define MAX_INST_TO_PRINT 10
+
+
+extern SymList symlist;  // ftrace.c
 
 CPU_state cpu = {};
 uint64_t g_nr_guest_inst = 0;
@@ -41,7 +45,25 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
 
-#ifdef CONFIG_ITRACE
+#ifdef CONFIG_TRACE
+  int fun_num = 0;;
+  //011011_11
+  if ((_this->isa.inst & 0xff) == 0x6f){   // 0x6f=11011_11
+  	for (int i = 0; i < symlist.count; i++) {
+  		if (_this->dnpc == symlist.first[i].addr) {
+  			fun_num++;
+  			printf("%3dcall [%s@addr:%d]", fun_num, symlist.first[i].name,\
+  				   symlist.first[i].addr);
+  		}
+  	}
+  }   
+  
+    //00001_000_00000_1100111   0x08067 为 ret指令
+    if ((_this->isa.inst & 0xfffff) == 0x8067) {
+		printf("%3dret [@addr:%d]", fun_num, _this->dnpc);
+    }
+
+  // iringbuf
   if (nemu_state.halt_ret != 0) {
     int cur = _this->iringbuf.cur + 1;
     int i;
@@ -65,7 +87,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
   s->snpc = pc;
   isa_exec_once(s);
   cpu.pc = s->dnpc;
-#ifdef CONFIG_ITRACE
+#ifdef CONFIG_TRACE
   char *p = s->logbuf;
   p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);
   int ilen = s->snpc - s->pc;
@@ -88,7 +110,8 @@ static void exec_once(Decode *s, vaddr_t pc) {
   void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
   disassemble(p, s->logbuf + sizeof(s->logbuf) - p,
       MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc), (uint8_t *)&s->isa.inst, ilen);
-  
+
+  // mtrace 
   int cur = (s->iringbuf.cur + 1) % 16;
   s->iringbuf.cur = cur;
   strncpy(s->iringbuf.buf[cur], s->logbuf, 127);
