@@ -26,6 +26,7 @@ void ftrace_init(char *filename) {
 	
 	fd = open(filename, O_RDONLY);
 	if (fd < 0) {
+		printf("fd:%d\n", fd);
 		perror("open");
 		exit(-1);
 	}
@@ -52,29 +53,32 @@ void ftrace_init(char *filename) {
 	
 	// 获取Section header
 	shdr = (Elf32_Shdr *)&mem[ehdr->e_shoff];
+	
 	// 获取shstrtab这个节的偏移地址
-	char *shstrtab = (char *)&mem[(shdr[ehdr->e_shstrndx].sh_offset)];  // 获取shstrtab这个节的偏移地址
-	
-	// 获取.symtab在Section header的索引
-	int i = 0;
-	while (strcmp(shstrtab+shdr[i].sh_name, ".symtab") != 0) {
-		i++;
-	}
-	// 获取.symtab的索引地址
-	Elf32_Sym *symtab = (Elf32_Sym *)&mem[shdr[i].sh_offset];
-	
+	char *shstrtab = (char *)&mem[(shdr[ehdr->e_shstrndx].sh_offset)];
+
+
 	// 获取string tab的偏移地址
+	int i = 0;
 	i = 0;
 	while (strcmp(shstrtab+shdr[i].sh_name, ".strtab") !=0 ) {
 		i++;
 	}
 	char *strtab = (char *)&mem[shdr[i].sh_offset];
+
 	
-	// 获取symble tab中fun的项数，以便迭代时使用（将要把fun单独提取出来） 
+    // 获取.symtab的索引地址
+    i = 0;
+	while (strcmp(shstrtab+shdr[i].sh_name, ".symtab") != 0) {
+		i++;
+	}
+	Elf32_Sym *symtab = (Elf32_Sym *)&mem[shdr[i].sh_offset];
+	
+	// 获取symble tab的项数，以便迭代时使用（将要把fun单独提取出来） 
 	int symtab_num = shdr[i].sh_size / sizeof(Elf32_Sym);
 	int funtab_num = 0; 
 	for (int i = 0; i < symtab_num; i++) {
-		if (symtab[i].st_info == STT_FUNC) funtab_num ++;
+		if ((symtab[i].st_info & 0x0f) == STT_FUNC) funtab_num ++;
 	}
 	
 	if (funtab_num >= 1000) {
@@ -82,23 +86,22 @@ void ftrace_init(char *filename) {
 		exit(-1);
 	};
 	
-	
 	// 将fun信息提取出来
 	symlist.count = funtab_num;
 	SymNode *funtab = malloc(sizeof(SymNode)*funtab_num);
-	funtab_num = 0;
+	int m = 0;
 	for (int i = 0; i < symtab_num; i++) {
-		if (symtab[i].st_info == STT_FUNC) {
-			funtab->addr = (symtab[i].st_value);
-			strncpy(funtab->name, strtab+symtab[i].st_name, 63);
+		if ((symtab[i].st_info & 0x0f) == STT_FUNC) {
+			funtab[m].addr = (symtab[i].st_value);
+			strncpy(funtab[m].name, strtab+symtab[i].st_name, 63);
+			m++;
 		}
 	}
-	symlist.first = funtab;
+	symlist.list = funtab;
 		
 	
 	return;
 }
-
 #endif
 
 

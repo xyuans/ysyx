@@ -50,10 +50,10 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   //011011_11
   if ((_this->isa.inst & 0xff) == 0x6f){   // 0x6f=11011_11
   	for (int i = 0; i < symlist.count; i++) {
-  		if (_this->dnpc == symlist.first[i].addr) {
+  		if (_this->dnpc == symlist.list[i].addr) {
   			fun_num++;
-  			printf("%3dcall [%s@addr:%d]", fun_num, symlist.first[i].name,\
-  				   symlist.first[i].addr);
+  			printf("%3dcall [%s@addr:%d]", fun_num, symlist.list[i].name,\
+  				   symlist.list[i].addr);
   		}
   	}
   }   

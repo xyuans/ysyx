@@ -6,7 +6,7 @@ typedef struct SymNode {
 } SymNode;
 
 typedef struct SymList {
-	SymNode *first;
+	SymNode *list;
 	int count;
 } SymList;
 
