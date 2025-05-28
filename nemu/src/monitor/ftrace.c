@@ -1,5 +1,6 @@
-//#ifdef CONFIG_TRACE
+#include <generated/autoconf.h>
 
+#ifdef CONFIG_TRACE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -98,7 +99,7 @@ void ftrace_init(char *filename) {
 	return;
 }
 
-//#endif
+#endif
 
 
 
