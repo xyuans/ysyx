@@ -17,13 +17,17 @@
 #include <cpu/decode.h>
 #include <cpu/difftest.h>
 #include <locale.h>
-
+#include <string.h>
+#include <monitor/ftrace.h>
 /* The assembly code of instructions executed is only output to the screen
  * when the number of instructions executed is less than this value.
  * This is useful when you use the `si' command.
  * You can modify this value as you want.
  */
 #define MAX_INST_TO_PRINT 10
+
+
+extern SymList symlist;  // ftrace.c
 
 CPU_state cpu = {};
 uint64_t g_nr_guest_inst = 0;
@@ -41,6 +45,58 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
 
+#ifdef CONFIG_TRACE
+  if (symlist.exist == true) {
+    // 函数调用栈
+    typedef struct Fun_Stat {
+      int stat[64];
+      int p;
+    } Fun_Stat;
+    static Fun_Stat fun_stat = {.p = -1};
+
+    //00001_000_00000_1100111   0x08067 为 ret指令
+    if ((_this->isa.inst & 0xff07f) == 0x8067) {
+      uint32_t location = 0;
+      int index;
+      for (int i = fun_stat.p; i >= 0 ; i--) {
+        // 返回位置在dnpc地址之前最近的一个函数
+        uint32_t addr = symlist.list[fun_stat.stat[i]].addr;
+        if (_this->dnpc > addr && addr > location) {
+          location = addr;
+          index = i;
+        }
+      }
+      fun_stat.p = index;
+      printf("%2d ret  [#addr:%x] #%s\n", index, _this->dnpc, symlist.list[fun_stat.stat[index]].name);
+    }
+    //jal和jalr
+    else if ((_this->isa.inst & 0x7f) == 0x6f || (_this->isa.inst & 0x707f) == 0x67){   // 0x6f=11011_11
+      for (int i = 0; i < symlist.count; i++) {
+        if (_this->dnpc == symlist.list[i].addr) {
+          fun_stat.p++;
+          if (fun_stat.p > 31 || fun_stat.p < 0) {
+            printf("function statck is overflower.\n");
+            exit(-1);
+          }
+          fun_stat.stat[fun_stat.p] = i;
+          printf("%2d call [@addr:%x] @%s\n", fun_stat.p, \
+                symlist.list[i].addr, symlist.list[i].name);
+        }
+      }
+    }
+  }
+  // iringbuf
+  if (nemu_state.halt_ret != 0) {
+    int cur = _this->iringbuf.cur + 1;
+    int i;
+    for (i = 0; i < 15; i++) {
+      printf("   %s\n", _this->iringbuf.buf[cur]);
+      cur = (cur + 1) % 16;
+    }
+    printf("-->%s\n", _this->iringbuf.buf[cur]);
+  }
+#endif
+
 #ifdef CONFIG_WATCHPOINT
   if (check_wps()) {
     nemu_state.state = NEMU_STOP;
@@ -53,7 +109,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
   s->snpc = pc;
   isa_exec_once(s);
   cpu.pc = s->dnpc;
-#ifdef CONFIG_ITRACE
+#ifdef CONFIG_TRACE
   char *p = s->logbuf;
   p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);
   int ilen = s->snpc - s->pc;
@@ -76,6 +132,11 @@ static void exec_once(Decode *s, vaddr_t pc) {
   void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
   disassemble(p, s->logbuf + sizeof(s->logbuf) - p,
       MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc), (uint8_t *)&s->isa.inst, ilen);
+
+  // mtrace 
+  int cur = (s->iringbuf.cur + 1) % 16;
+  s->iringbuf.cur = cur;
+  strncpy(s->iringbuf.buf[cur], s->logbuf, 127);
 #endif
 }
 
@@ -108,7 +169,6 @@ void assert_fail_msg() {
 void cpu_exec(uint64_t n) {
   g_print_step = (n < MAX_INST_TO_PRINT);
   switch (nemu_state.state) {    //enum { NEMU_RUNNING, NEMU_STOP, NEMU_END, NEMU_ABORT, NEMU_QUIT };
-
     case NEMU_END: case NEMU_ABORT: case NEMU_QUIT:
       printf("Program execution has ended. To restart the program, exit NEMU and run again.\n");
       return;
@@ -118,7 +178,7 @@ void cpu_exec(uint64_t n) {
   uint64_t timer_start = get_time();
 
   execute(n);
-
+  
   uint64_t timer_end = get_time();
   g_timer += timer_end - timer_start;
 
@@ -126,6 +186,12 @@ void cpu_exec(uint64_t n) {
     case NEMU_RUNNING: nemu_state.state = NEMU_STOP; break;
 
     case NEMU_END: case NEMU_ABORT:
+      // 释放symlist.list
+      #ifdef CONFIG_TRACE
+        free(symlist.list);
+        symlist.list = NULL;
+      #endif
+
       Log("nemu: %s at pc = " FMT_WORD,
           (nemu_state.state == NEMU_ABORT ? ANSI_FMT("ABORT", ANSI_FG_RED) :
            (nemu_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) :

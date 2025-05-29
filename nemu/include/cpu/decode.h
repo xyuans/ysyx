@@ -18,19 +18,24 @@
 
 #include <isa.h>
 
+typedef struct RingBuf {
+  int cur;
+  char buf[16][128];
+} RingBuf;
+
 /*
  * 用于在<指令解码阶段>保存指令的地址、执行路径预测、指令集架构（ISA）的解码信息以及调试日志缓冲区
  * */
 typedef struct Decode {
   vaddr_t pc;
   // 表示基于当前指令类型预测的下一条指令地址
-  // 对于顺序指令（如普通算术指令），snpc = pc + 指令长度。
-  // 对于分支指令（如 jump、branch），snpc 可能是分支目标地址或顺序地址（具体取决于静态预测策略）
   vaddr_t snpc; // static next pc
   // 表示实际执行后的下一条指令地址。
   vaddr_t dnpc; // dynamic next pc
-  ISADecodeInfo isa;        // 保存指令集架构（ISA）相关的解码信息，如操作码、操作数、寄存器索引、立即数等。
-  IFDEF(CONFIG_ITRACE, char logbuf[128]);    // 指令执行日志缓冲区
+  ISADecodeInfo isa;        // 保存指令信息
+  // IFDEF(CONFIG_TRACE, SYMTAB *funtab);  // 记录是否发生跳转指令 jal jalr
+  IFDEF(CONFIG_TRACE, char logbuf[128]);    // 指令执行日志缓冲区
+  IFDEF(CONFIG_TRACE, RingBuf iringbuf);
 } Decode;
 
 // --- pattern matching mechanism ---
