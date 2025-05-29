@@ -13,7 +13,7 @@
 #include <unistd.h>
 #include <monitor/ftrace.h>
 
-SymList symlist; //__attribute__((section(".bss")));
+SymList symlist = {.exist = false}; //__attribute__((section(".bss")));
 
 void ftrace_init(char *filename) {
 	int fd;
@@ -96,8 +96,9 @@ void ftrace_init(char *filename) {
 			m++;
 		}
 	}
+
+  symlist.exist = true;
 	symlist.list = funtab;
-		
 	
 	return;
 }
