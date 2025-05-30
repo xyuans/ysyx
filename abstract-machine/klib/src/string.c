@@ -4,7 +4,7 @@
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
-size_t strlen(const char *s) {
+size_t strlen(const char *s) {  // 2读
   size_t len = 0;
   while (*s != '\0') {
     len++;
@@ -14,7 +14,7 @@ size_t strlen(const char *s) {
   return len;
 }
 
-char *strcpy(char *dst, const char *src) {
+char *strcpy(char *dst, const char *src) {  // 1写
   size_t i;
   
   for (i = 0; src[i] != '\0'; i++) {
@@ -25,7 +25,7 @@ char *strcpy(char *dst, const char *src) {
   return dst;
 }
 
-char *strncpy(char *dst, const char *src, size_t n) {
+char *strncpy(char *dst, const char *src, size_t n) {  // 1写
   size_t i;
 
   for(i = 0; i < n && src[i] != '\0'; i++) {
@@ -38,7 +38,7 @@ char *strncpy(char *dst, const char *src, size_t n) {
   return dst;
 }
 
-char *strcat(char *dst, const char *src) {
+char *strcat(char *dst, const char *src) {  // 1写
   size_t i;
   size_t dst_len = strlen(dst);
   
@@ -51,7 +51,7 @@ char *strcat(char *dst, const char *src) {
   return dst;
 }
 
-int strcmp(const char *s1, const char *s2) {
+int strcmp(const char *s1, const char *s2) {  // 2读
   size_t i = 0;
   int cmp;
 
@@ -64,7 +64,7 @@ int strcmp(const char *s1, const char *s2) {
   return cmp;
 }
 
-int strncmp(const char *s1, const char *s2, size_t n) {
+int strncmp(const char *s1, const char *s2, size_t n) {  // 2读
   size_t i = 0;
   int cmp;
 
@@ -77,7 +77,7 @@ int strncmp(const char *s1, const char *s2, size_t n) {
   return cmp;
 }
 
-void *memset(void *s, int c, size_t n) {
+void *memset(void *s, int c, size_t n) {  // 1写
   size_t i;
 
   // s[i] 等价于 *(s + i)，但 s 是 void * 类型，所以(char *)s[i]为非法指针针运算。 
@@ -88,7 +88,7 @@ void *memset(void *s, int c, size_t n) {
   return s;
 }
 
-void *memmove(void *dst, const void *src, size_t n) {
+void *memmove(void *dst, const void *src, size_t n) {  // 1写
   size_t i;
 
   if ((src < dst) && (src + n > dst)) {
@@ -105,7 +105,7 @@ void *memmove(void *dst, const void *src, size_t n) {
   return dst;
 }
 
-void *memcpy(void *out, const void *in, size_t n) {
+void *memcpy(void *out, const void *in, size_t n) {  // 1写
   size_t i;
 
   for (i = 0; i < n; i++) {
@@ -115,7 +115,7 @@ void *memcpy(void *out, const void *in, size_t n) {
   return out;
 }
 
-int memcmp(const void *s1, const void *s2, size_t n) {
+int memcmp(const void *s1, const void *s2, size_t n) {  // 2读
   size_t i;
   int cmp;
 
