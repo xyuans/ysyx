@@ -1,9 +1,20 @@
-VSOURCES=$(wildcard vsrc/*.v vsrc/**/*.v)
+ifeq ($(BLOCK),)
+$(error need a BLOCK)
+endif
 
-all:
-	@echo "Write this Makefile by your self."
+CSRC=$(abspath $(wildcard csrc/$(BLOCK)/*.cpp))
+VSRC=$(abspath $(wildcard vsrc/$(BLOCK)/*.v vsrc/$(BLOCK)/**/*.v))
 
+TRACE ?= --trace-fst
+TOP   ?= top
+
+.PHONY: sim
 sim:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
-	@verlator -Wall --trace --cc --build --exe sim_main.cpp
+	verilator $(TRACE) -Wall  --cc  --build --exe --top $(TOP) --Mdir  ./build/$(BLOCK) $(CSRC) $(VSRC)
+
+.PHONY: clean
+clean:
+	rm -rf ./obj_dir/
+
 include ../Makefile
