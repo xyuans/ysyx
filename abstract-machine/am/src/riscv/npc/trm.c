@@ -1,7 +1,7 @@
 #include <am.h>
 #include <klib-macros.h>
 
-#define npc_trap(code) asm volatile ("move $v0, %0; sdbbp" : :"r"(code))
+# define nemu_trap(code) asm volatile("move $a0, %0; break 0" : :"r"(code))
 
 extern char _heap_start;
 int main(const char *args);

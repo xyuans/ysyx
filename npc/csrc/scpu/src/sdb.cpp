@@ -172,7 +172,7 @@ static int cmd_x(char *args) {
 
   sscanf(expression, "%x", &addr); 
   if (addr < 0x80000000 || addr - 0x80000000 > MEM_MAX || addr - 0x80000000 < N) {
-    printf("invaild address or N is too big\n");
+    printf("addr:%x N:%d, invaild address or N is too big\n", addr, N);
     return 0;
   }
 
