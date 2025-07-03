@@ -1,7 +1,15 @@
 #include <readline/readline.h>
 #include <readline/history.h>
-#include <memory.h>
 
+#include "memory.h"
+#include <assert.h>
+
+#define ARRLEN(arr) (int)(sizeof(arr) / sizeof(arr[0]))
+enum {
+  NPC_RUNNING,
+  NPC_STOP,
+  NPC_QUITE
+};
 
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */

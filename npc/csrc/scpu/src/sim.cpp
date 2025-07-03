@@ -1,13 +1,11 @@
-
 #include "verilated.h"  // 这是 Verilator 的主头文件
-
 #include "Vtop.h"
 #include "verilated_fst_c.h"
-
+#include "sim.h"
 #include <stdint.h>
 #include <stdio.h>
+#include <stdio.h>
 
-#include "functs.h"
 
 enum {
   NPC_RUNNING,
