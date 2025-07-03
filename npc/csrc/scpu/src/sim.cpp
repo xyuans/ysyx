@@ -5,10 +5,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdio.h>
-
-
-
-
+#include "memory.h"
 
 static bool g_print_step = false;
 
@@ -60,7 +57,7 @@ void reset(int n) {
 }
 
 
-extern "C" int ebreak() {
+extern "C" void ebreak() {
   npc_state.state = NPC_STOP;
   npc_state.halt_pc = top->pc;
   npc_state.halt_ret = top->rootp->__DOT__rf__DOT__regs[10];
@@ -90,7 +87,7 @@ void cpu_exec(uint64_t n) {
   for (int i = 0; i < n; i++) {
     exec_once();
     
-    if (npc_state = STOP) {
+    if (npc_state = NPC_STOP) {
       printf("final pc is: %x\n", npc_state.halt_pc);
       if (npc_state.halt_ret = 0) {
         printf("HIT GOOD TRAP\n");
