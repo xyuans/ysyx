@@ -17,7 +17,9 @@ const char *regs[] = {
   "a6", "a7", "s2", "s3", "s4", "s5", "s6", "s7",
   "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
 };
+
 NPCState npc_state;
+
 VerilatedContext* contextp = NULL;
 VerilatedFstC* tfp = NULL;
 Vtop *top = NULL;
@@ -87,7 +89,7 @@ void cpu_exec(uint64_t n) {
   for (int i = 0; i < n; i++) {
     exec_once();
     
-    if (npc_state == NPC_STOP) {
+    if (npc_state.state == NPC_STOP) {
       printf("final pc is: %x\n", npc_state.halt_pc);
       if (npc_state.halt_ret == 0) {
         printf("HIT GOOD TRAP\n");
