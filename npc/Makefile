@@ -4,7 +4,7 @@ endif
 
 INC_PATH = $(abspath csrc/$(BLOCK)/include)
 
-CSRC=$(abspath $(wildcard csrc/$(BLOCK)/*.cpp) vsrc/$(BLOCK)/**/*.cpp)
+CSRC=$(abspath $(wildcard csrc/$(BLOCK)/*.cpp) csrc/$(BLOCK)/**/*.cpp)
 VSRC=$(abspath $(wildcard vsrc/$(BLOCK)/*.v vsrc/$(BLOCK)/**/*.v))
 
 TRACE ?= --trace-fst
