@@ -11,11 +11,11 @@ TRACE ?= --trace-fst
 TOP   ?= top
 
 CXXFLAGS += $(addprefix -I, $(INC_PATH))
-
+LDFLAGS  += -lreadline
 .PHONY: sim
 sim:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
-	verilator $(TRACE) -Wall  --cc $(addprefix -CFLAGS , $(CXXFLAGS)) \
+	verilator $(TRACE) -Wall  --cc $(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
 		                 --build --exe --top $(TOP) --Mdir ./build/$(BLOCK) $(CSRC) $(VSRC)
 
 run:
