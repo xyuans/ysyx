@@ -14,7 +14,7 @@ typedef struct {
   uint32_t halt_ret;     // 停止时的返回值或错误码
 } NPCState;
 
-static NPCState npc_state;
+NPCState npc_state;
 
 static bool g_print_step = false;
 

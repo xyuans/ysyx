@@ -7,7 +7,7 @@ enum {
   NPC_STOP,
   NPC_QUITE
 };
-
+extern NPCState npc_state;
 void sim_init();
 void step_and_dump_wave();
 void sim_exit();

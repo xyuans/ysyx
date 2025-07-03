@@ -170,7 +170,7 @@ static int cmd_x(char *args) {
 
   uint32_t addr;
 
-  sscanf(expression, "%lx", &addr); 
+  sscanf(expression, "%x", &addr); 
   if (addr < 0x80000000 || addr - 0x80000000 > MEM_MAX || addr - 0x80000000 < N) {
     printf("invaild address or N is too big\n");
     return 0;
