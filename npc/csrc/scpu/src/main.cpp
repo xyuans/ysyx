@@ -1,5 +1,5 @@
 #include "memory.h"
-
+#inlcude "sim.h"
 void sdb_mainloop();
 
 int main(int argc, char *argv[]) {

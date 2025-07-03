@@ -3,7 +3,8 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <sys/stat.h>
-#include <memory.h>
+
+#include "memory.h"
 
 uint8_t mem[MEM_MAX];
 
