@@ -7,11 +7,6 @@
 #include <stdio.h>
 
 
-enum {
-  NPC_RUNNING,
-  NPC_STOP,
-  NPC_QUITE
-};
 
 typedef struct {
   int state;             // 状态标识（如运行、暂停、异常等）

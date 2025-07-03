@@ -1,6 +1,13 @@
 #ifndef __SIM_H__
 #define __SIM_H__
 #include <stdint.h>
+
+enum {
+  NPC_RUNNING,
+  NPC_STOP,
+  NPC_QUITE
+};
+
 void sim_init();
 void step_and_dump_wave();
 void sim_exit();
