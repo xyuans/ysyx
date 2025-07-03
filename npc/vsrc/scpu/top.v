@@ -80,7 +80,7 @@ module top (
 
   always @(posedge clk) begin
     if (rst) pc <= 32'h80000000;
-    else
+    else begin
       if (inst[6:0] == 7'b1110011) ebreak();
       pc <= pc_result;
     end
