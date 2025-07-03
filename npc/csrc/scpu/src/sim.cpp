@@ -1,7 +1,7 @@
 #include "verilated.h"  // 这是 Verilator 的主头文件
 #include "Vtop.h"
 #include "verilated_fst_c.h"
-##include "Vtop___024root.h"
+#include "Vtop___024root.h"
 #include "sim.h"
 #include <stdint.h>
 #include <stdio.h>
