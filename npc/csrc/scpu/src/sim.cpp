@@ -64,7 +64,7 @@ void reset(int n) {
 extern "C" void ebreak() {
   npc_state.state = NPC_STOP;
   npc_state.halt_pc = top->pc;
-  npc_state.halt_ret = top->rootp->__DOT__rf__DOT__regs[10];
+  npc_state.halt_ret = top->rootp->__top_DOT__rf__top_DOT__regs[10];
   printf("ebreak happen\n");
 }
 
@@ -107,8 +107,8 @@ void cpu_exec(uint64_t n) {
 void reg_display() {
   printf(" %-10s%-#15x%-15d\n", "pc", pre_pc, pre_pc);
   for (int i=0; i<32; i++) {
-    printf(" %-10s%-#15x%-15d\n", regs[i], top->rootp->__DOT__rf__DOT__regs[i],
-           top->rootp->__DOT__rf__DOT__regs[i]);
+    printf(" %-10s%-#15x%-15d\n", regs[i], top->rootp->__top_DOT__rf__top_DOT__regs[i],
+           top->rootp->__top_DOT__rf__top_DOT__regs[i]);
   }
 }
 
