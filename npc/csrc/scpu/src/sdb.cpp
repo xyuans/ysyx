@@ -6,7 +6,7 @@
 #include "sim.h"
 #define ARRLEN(arr) (int)(sizeof(arr) / sizeof(arr[0]))
 
-
+extern NPCState npc_state;
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
   static char *line_read = NULL;

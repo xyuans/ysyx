@@ -13,7 +13,7 @@ typedef struct {
   uint32_t halt_ret;     // 停止时的返回值或错误码
 } NPCState;
 
-extern NPCState npc_state;
+
 void sim_init();
 void step_and_dump_wave();
 void sim_exit();
