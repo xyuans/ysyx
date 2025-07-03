@@ -2,7 +2,7 @@ ifeq ($(BLOCK),)
 $(error need a BLOCK)
 endif
 
-CSRC=$(abspath $(wildcard csrc/$(BLOCK)/*.cpp))
+CSRC=$(abspath $(wildcard csrc/$(BLOCK)/*.cpp) vsrc/$(BLOCK)/**/.cpp)
 VSRC=$(abspath $(wildcard vsrc/$(BLOCK)/*.v vsrc/$(BLOCK)/**/*.v))
 
 TRACE ?= --trace-fst

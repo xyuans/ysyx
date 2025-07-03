@@ -3,10 +3,9 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include <memory.h>
 
-
-#define MAX 65536  // 2^16
-uint8_t mem[MAX];
+uint8_t mem[MEM_MAX];
 
 void mem_init(char* filename) {
   FILE* file = fopen(filename, "rb"); // 以二进制读模式打开文件
@@ -20,8 +19,8 @@ void mem_init(char* filename) {
 
   long size = ftell(file);  // 获取文件指针当前位置，即文件大小
   
-  if (size >= MAX) {
-    printf("file size is %ld, greater then MAX\n", size);
+  if (size >= MEM_MAX) {
+    printf("file size is %ld, greater then MEM_MAX\n", size);
     exit(-1);
   }
   
@@ -39,10 +38,12 @@ void mem_init(char* filename) {
 
 uint32_t pmem_read(uint32_t addr) {
   uint32_t index = addr - 0x80000000;
-  if (index < 0 || index > MAX) {
-    printf("pc: %08x, beyond MAX.\n", addr);
+  if (index < 0 || index > MEM_MAX) {
+    printf("pc: %08x, beyond MEM_MAX.\n", addr);
     return 1;
   }
   printf ("index:%u, mem[index]: %x\n", index, mem[index]);
   return *(uint32_t *)(mem+index);
 }
+
+

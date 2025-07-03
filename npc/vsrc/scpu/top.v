@@ -1,4 +1,6 @@
 /* verilator lint_off UNUSEDSIGNAL */
+import "DPI-C" function void ebreak();
+
 module top (
   input clk,
   input rst,
@@ -78,7 +80,10 @@ module top (
 
   always @(posedge clk) begin
     if (rst) pc <= 32'h80000000;
-    else pc <= pc_result;
+    else
+      if (inst[6:0] == 7'b1110011) ebreak();
+      pc <= pc_result;
+    end
   end
 
 endmodule

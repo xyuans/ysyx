@@ -1,6 +1,4 @@
 /* verilator lint_off WIDTHTRUNC */
-import "DPI-C" function int ebreak();
-
 module Control(
   input [6:0] op,
   output reg_write,
@@ -22,7 +20,6 @@ module Control(
       7'b1100111: all_out = 8'b1_00_1_01_10;  // jalr,  i
       7'b0010011: all_out = 8'b1_00_1_00_00;  // addi,  i
       7'b0110011: all_out = 8'b1_xx_0_00_00;  // add,   r
-      7'b1110011: all_out = ebreak();
       default: all_out = 8'b0_xx_x_xx_xx;
     endcase
   end
