@@ -86,8 +86,8 @@ void exec_once() {
   top->inst = pmem_read(top->pc);
 
   int cur = (iringbuf.cur+1) % 16;
-  iringbuf.pc_buf = top->pc;
-  iringbuf.inst_buf = top->inst;
+  iringbuf.pc_buf[cur] = top->pc;
+  iringbuf.inst_buf[cur] = top->inst;
   iringbuf.cur = cur;
 
   step_and_dump_wave();
