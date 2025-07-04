@@ -43,7 +43,6 @@ uint32_t pmem_read(uint32_t addr) {
     printf("pc: %08x, beyond MEM_MAX.\n", addr);
     return 1;
   }
-  printf ("index:%u, mem[index]: %x\n", index, mem[index]);
   return *(uint32_t *)(mem+index);
 }
 

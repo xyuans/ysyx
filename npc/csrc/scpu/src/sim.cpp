@@ -49,7 +49,6 @@ void step_and_dump_wave()
 
 void sim_exit()
 {
-	step_and_dump_wave();
 	tfp->close();
 }
 
