@@ -122,7 +122,7 @@ void cpu_exec(uint64_t n) {
           printf("   pc:0x%x    inst:0x%x\n", iringbuf.pc_buf[cur], iringbuf.inst_buf[cur]);
           cur = (cur + 1) % 16;
         }
-        printf("-->pc:0x%x    inst:0x%x\n", iringbuf.pc_[cur], iringbuf.inst_buf[cur]);
+        printf("-->pc:0x%x    inst:0x%x\n", iringbuf.pc_buf[cur], iringbuf.inst_buf[cur]);
         printf("HIT BAD TRAP\n");
       }
       break;
