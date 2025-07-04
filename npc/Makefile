@@ -11,11 +11,12 @@ TRACE ?= --trace-fst
 TOP   ?= top
 
 CXXFLAGS += $(addprefix -I, $(INC_PATH))
-LDFLAGS  += -lreadline
+LDFLAGS  += -L${NEMU_HOME}/tools/capstone/repo/
+LDLIBS   += -lreadline -l:libcapstone.so.5
 .PHONY: sim
 sim: 
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
-	verilator $(TRACE) -Wall  --cc $(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
+	verilator $(TRACE) -Wall  --cc $(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS) $(LDLIBS)) \
 		                 --build --exe --top $(TOP) --Mdir ./build/$(BLOCK) $(CSRC) $(VSRC)
 
 run:

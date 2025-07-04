@@ -23,7 +23,8 @@ const char *regs[] = {
 NPCState npc_state;
 
 
-RingBuf iringbuf;
+char logbuf[128];    // 指令执行日志缓冲区
+RingBuf iringbuf;    // itrace的环形缓冲区
 
 VerilatedContext* contextp = NULL;
 VerilatedFstC* tfp = NULL;
@@ -84,12 +85,6 @@ extern "C" void ebreak() {
 void exec_once() {
   pre_pc = top->pc;  // 进行一步仿真之后,pc值会更新为下一条指令位置。
   top->inst = pmem_read(top->pc);
-
-  int cur = (iringbuf.cur+1) % 16;
-  iringbuf.pc_buf[cur] = top->pc;
-  iringbuf.inst_buf[cur] = top->inst;
-  iringbuf.cur = cur;
-
   step_and_dump_wave();
   if (g_print_step) {
     printf("top->inst:%08x, top->pc:%08x\n", top->inst, top->pc);
@@ -117,12 +112,6 @@ void cpu_exec(uint64_t n) {
         printf("HIT GOOD TRAP\n");
       }
       else {
-        int cur = (iringbuf.cur + 1) % 16;
-        for (int i = 0; i < 15; i++) {
-          printf("   pc:0x%x    inst:0x%x\n", iringbuf.pc_buf[cur], iringbuf.inst_buf[cur]);
-          cur = (cur + 1) % 16;
-        }
-        printf("-->pc:0x%x    inst:0x%x\n", iringbuf.pc_buf[cur], iringbuf.inst_buf[cur]);
         printf("HIT BAD TRAP\n");
       }
       break;
@@ -137,5 +126,6 @@ void reg_display() {
            top->rootp->top__DOT__rf__DOT__regs[i]);
   }
 }
+
 
 
