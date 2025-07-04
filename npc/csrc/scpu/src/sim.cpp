@@ -35,7 +35,7 @@ void sim_init(char *arg)
 	top = new Vtop{contextp};
 	tfp = new VerilatedFstC;
 
-  if (arg = NULL) return;
+  if (arg == NULL) return;
   if (strcmp(arg, "-w") == 0) {
 	  contextp->traceEverOn(true); 
 	  top->trace(tfp, 1);
