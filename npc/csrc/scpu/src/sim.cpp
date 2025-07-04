@@ -26,30 +26,40 @@ VerilatedContext* contextp = NULL;
 VerilatedFstC* tfp = NULL;
 Vtop *top = NULL;
 
+bool print_wave = false;  // 是否打印波形
 
 // 仿真任何模块都可以使用这个代码块
-void sim_init()
+void sim_init(char *arg)
 {
 	contextp = new VerilatedContext;
 	top = new Vtop{contextp};
 	tfp = new VerilatedFstC;
 	
-	contextp->traceEverOn(true); 
-	top->trace(tfp, 1);
-	tfp->open("cpu_wave.fst");
+  if (strcmp(arg, "-w") == 0) {
+	  contextp->traceEverOn(true); 
+	  top->trace(tfp, 1);
+	  tfp->open("cpu_wave.fst");
+    print_wave = true;
+  }
 }
 
 // 区别与有无clk
 void step_and_dump_wave()
 { 
-  top->clk = 0;top->eval();contextp->timeInc(1);tfp->dump(contextp->time());
-  top->clk = 1;top->eval();contextp->timeInc(1);tfp->dump(contextp->time());
+  top->clk = 0;top->eval();contextp->timeInc(1);
+  if (print_wave) tfp->dump(contextp->time());
+
+  top->clk = 1;top->eval();contextp->timeInc(1);
+  if (print_wave) tfp->dump(contextp->time());
 }
 
 
 void sim_exit()
 {
-	tfp->close();
+	if (print_wave) tfp->close();
+  top->final();
+  // Destroy model
+  delete top;
 }
 
 

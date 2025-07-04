@@ -2,8 +2,9 @@
 #include "sim.h"
 void sdb_mainloop();
 
+bool print_wave;
 int main(int argc, char *argv[]) {
-  sim_init();
+  sim_init(argv[2]);
   // 将程序读入内存，并打印前10个字节的值
   mem_init(argv[1]);
   reset(2);
