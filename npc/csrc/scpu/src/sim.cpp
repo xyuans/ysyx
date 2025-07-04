@@ -23,7 +23,7 @@ const char *regs[] = {
 NPCState npc_state;
 
 
-RingBuf iringbuf
+RingBuf iringbuf;
 
 VerilatedContext* contextp = NULL;
 VerilatedFstC* tfp = NULL;
