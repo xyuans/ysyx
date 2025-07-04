@@ -14,7 +14,7 @@ typedef struct {
 } NPCState;
 
 
-void sim_init();
+void sim_init(char* arg);
 void step_and_dump_wave();
 void sim_exit();
 void reset(int n);
