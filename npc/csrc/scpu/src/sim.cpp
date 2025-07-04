@@ -1,18 +1,18 @@
 #include "verilated.h"  // 这是 Verilator 的主头文件
 #include "Vtop.h"
 #include "verilated_fst_c.h"
-#include "Vtop___024root.h"
-#include "sim.h"
+#include "Vtop___024root.h"  // 为了访问内部信号
+#include "common.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <stdio.h>
-#include "memory.h"
 
-
+// 控制是否打印指令和pc值
 static bool g_print_step = false;
 
 static uint32_t pre_pc; 
 
+// 为支持打印寄存器
 const char *regs[] = {
   "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
   "s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5",
@@ -21,6 +21,9 @@ const char *regs[] = {
 };
 
 NPCState npc_state;
+
+
+RingBuf iringbuf
 
 VerilatedContext* contextp = NULL;
 VerilatedFstC* tfp = NULL;
@@ -81,6 +84,12 @@ extern "C" void ebreak() {
 void exec_once() {
   pre_pc = top->pc;  // 进行一步仿真之后,pc值会更新为下一条指令位置。
   top->inst = pmem_read(top->pc);
+
+  int cur = (iringbuf.cur+1) % 16;
+  iringbuf.pc_buf = top->pc;
+  iringbuf.inst_buf = top->inst;
+  iringbuf.cur = cur;
+
   step_and_dump_wave();
   if (g_print_step) {
     printf("top->inst:%08x, top->pc:%08x\n", top->inst, top->pc);
@@ -103,10 +112,17 @@ void cpu_exec(uint64_t n) {
     
     if (npc_state.state == NPC_STOP) {
       printf("final pc is: %x\n", npc_state.halt_pc);
+
       if (npc_state.halt_ret == 0) {
         printf("HIT GOOD TRAP\n");
       }
       else {
+        int cur = (iringbuf.cur + 1) % 16;
+        for (int i = 0; i < 15; i++) {
+          printf("   pc:0x%x    inst:0x%x\n", iringbuf.pc_buf[cur], iringbuf.inst_buf[cur]);
+          cur = (cur + 1) % 16;
+        }
+        printf("-->pc:0x%x    inst:0x%x\n", iringbuf.pc[cur], iringbuf.inst_buf[cur]);
         printf("HIT BAD TRAP\n");
       }
       break;

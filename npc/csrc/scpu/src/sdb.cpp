@@ -1,9 +1,9 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <stdlib.h>
-#include "memory.h"
 #include <assert.h>
-#include "sim.h"
+#include "common.h"
+
 #define ARRLEN(arr) (int)(sizeof(arr) / sizeof(arr[0]))
 
 extern NPCState npc_state;

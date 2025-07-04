@@ -13,13 +13,13 @@ TOP   ?= top
 CXXFLAGS += $(addprefix -I, $(INC_PATH))
 LDFLAGS  += -lreadline
 .PHONY: sim
-sim:
+sim: 
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	verilator $(TRACE) -Wall  --cc $(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
 		                 --build --exe --top $(TOP) --Mdir ./build/$(BLOCK) $(CSRC) $(VSRC)
 
 run:
-	echo V$(TOP) $(IMG).bin
+	echo V$(TOP) $(IMG)
 	./build/$(BLOCK)/V$(TOP) $(IMG)
 
 .PHONY: clean

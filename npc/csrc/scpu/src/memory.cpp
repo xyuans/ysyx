@@ -4,7 +4,7 @@
 #include <errno.h>
 #include <sys/stat.h>
 
-#include "memory.h"
+#include "common.h"
 
 uint8_t mem[MEM_MAX];
 
