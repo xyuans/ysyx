@@ -3,6 +3,5 @@
 
 #include "memory.h"
 #include "sim.h"
-#include "trace.h"
 
 #endif
