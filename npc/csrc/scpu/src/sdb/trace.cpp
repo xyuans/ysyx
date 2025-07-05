@@ -17,7 +17,7 @@ extern uint32_t cur_pc;
 extern uint32_t cur_inst;
 static FILE *file = NULL;
 
-void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
+extern "C" void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
 
 static void iringbuf_write(char *str) {
   int cur = (iringbuf.cur + 1) % 16;
