@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 #include "sdb/trace.h"
 typedef struct RingBuf {
   int cur;
