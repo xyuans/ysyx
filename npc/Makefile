@@ -11,7 +11,7 @@ TRACE ?= --trace-fst
 TOP   ?= top
 
 CXXFLAGS += $(addprefix -I, $(INC_PATH))
-LDFLAGS  += -L${NEMU_HOME}/tools/capstone/repo/ -L${NEMU_HOME}//build/obj-riscv32-nemu-interpreter/src/utils
+LDFLAGS  += -L${NEMU_HOME}/tools/capstone/repo/ -L${NEMU_HOME}/build/obj-riscv32-nemu-interpreter/src/utils
 LDLIBS   += -lreadline -l:libcapstone.so.5 -l:disasm.o
 .PHONY: sim
 sim: 
