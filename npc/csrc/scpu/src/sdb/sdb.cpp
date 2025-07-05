@@ -195,7 +195,7 @@ static int cmd_x(char *args) {
 static int cmd_open(char *args) {
   char *token = strtok(args, " ");
   while (token != NULL) {
-    switch (token) {
+    switch (&token) {
       case 'w':
         trace_diff_state.wave = true;
         printf("wtrace is on\n");
