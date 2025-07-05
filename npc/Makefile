@@ -4,8 +4,8 @@ endif
 
 INC_PATH = $(abspath csrc/$(BLOCK)/include)
 
-CSRC=$(abspath $(wildcard csrc/$(BLOCK)/*.cpp) csrc/$(BLOCK)/**/*.cpp)
-VSRC=$(abspath $(wildcard vsrc/$(BLOCK)/*.v vsrc/$(BLOCK)/**/*.v))
+CSRC=$(abspath $(shell find csrc/$(BLOCK)/src -name "*.cpp"))
+VSRC=$(abspath $(shell find vsrc/$(BLOCK)/ -name "*.v"))
 
 TRACE ?= --trace-fst
 TOP   ?= top
