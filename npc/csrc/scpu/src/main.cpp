@@ -3,7 +3,7 @@
 void sdb_mainloop();
 
 int main(int argc, char *argv[]) {
-  sim_init(argv[2]);
+  sim_init();
   // 将程序读入内存，并打印前10个字节的值
   mem_init(argv[1]);
   reset(2);

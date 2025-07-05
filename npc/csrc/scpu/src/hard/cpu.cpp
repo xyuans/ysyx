@@ -7,8 +7,11 @@
 #include <stdio.h>
 #include <stdio.h>
 
+extern trace_diff_state;
 
-static uint32_t pre_pc; 
+NPCState npc_state;
+uint32_t cur_pc; 
+uint32_t cur_inst;
 
 // 为支持打印寄存器
 static const char *regs[] = {
@@ -17,10 +20,8 @@ static const char *regs[] = {
   "a6", "a7", "s2", "s3", "s4", "s5", "s6", "s7",
   "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
 };
-
-NPCState npc_state;
-
-
+static uint32_t steps;
+static bool print_step = false;
 
 static VerilatedContext* contextp = NULL;
 static VerilatedFstC* tfp = NULL;
@@ -39,16 +40,18 @@ void sim_init()
 	top->trace(tfp, 1);
 	tfp->open("cpu_wave.fst");
   print_wave = true;
+
+  trace_init();
 }
 
 // 区别与有无clk
 void step_and_dump_wave()
 { 
   top->clk = 0;top->eval();contextp->timeInc(1);  // 即使不写波形，仍需调用contextp->timeInc(1)
-  tfp->dump(contextp->time());
+  if (trace_diff_state.wtrace == true) tfp->dump(contextp->time());
 
   top->clk = 1;top->eval();contextp->timeInc(1);
-  tfp->dump(contextp->time());
+  if (trace_diff_state.wtrace == true) tfp->dump(contextp->time());
 }
 
 
@@ -58,6 +61,8 @@ void sim_exit()
   top->final();
   // Destroy model
   delete top;
+
+  trace_exit();
 }
 
 
@@ -75,14 +80,18 @@ extern "C" void ebreak() {
   printf("ebreak happen\n");
 }
 
+// 更新cur_pc, cur_inst, steps, 退进一步仿真
 void exec_once() {
-  pre_pc = top->pc;  // 进行一步仿真之后,pc值会更新为下一条指令位置。
+  cur_pc = top->pc;  // 进行一步仿真之后,pc值会更新为下一条指令位置。
   top->inst = pmem_read(top->pc);
-
+  cur_inst = top->inst;
+  
+  steps++;
   step_and_dump_wave();
 }
 
 void cpu_exec(uint64_t n) {
+  // 检查运行状态
   switch (npc_state.state) {
     case NPC_STOP:
       printf("Program execution has ended. To restart the program, exit NPC and run again.\n");
@@ -92,14 +101,20 @@ void cpu_exec(uint64_t n) {
   }
   
   for (int i = 0; i < n; i++) {
-    exec_once();    
-    if (npc_state.state == NPC_STOP) {
-      printf("final pc is: %x\n", npc_state.halt_pc);
+    print_step = (n < 11);
+    exec_once();
+    // 把追踪信息写入log文件,diff test
+    trace_diff();
+    if (print_step) logbuf_print();
 
+    // 执行完一步就检查一下运行状态
+    if (npc_state.state == NPC_STOP) {
+      printf("final pc is: %x, steps is: %d\n", npc_state.halt_pc, steps);
       if (npc_state.halt_ret == 0) {
         printf("HIT GOOD TRAP\n");
       }
       else {
+        iringbuf_write();
         printf("HIT BAD TRAP\n");
       }
       break;
@@ -108,7 +123,7 @@ void cpu_exec(uint64_t n) {
 }
 
 void reg_display() {
-  printf(" %-10s%-#15x%-15d\n", "pc", pre_pc, pre_pc);
+  printf(" %-10s%-#15x%-15d\n", "pc", cur_pc, cur_pc);
   for (int i=0; i<32; i++) {
     printf(" %-10s%-#15x%-15d\n", regs[i], top->rootp->top__DOT__rf__DOT__regs[i],
            top->rootp->top__DOT__rf__DOT__regs[i]);
