@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdint.h>
-
+#include <stdlib.h>
+#include "trace.h"
 typedef struct RingBuf {
   int cur;
   char buf[16][128];
