@@ -192,7 +192,7 @@ static int cmd_x(char *args) {
   return 0;
 }
 
-static int cmd_open() {
+static int cmd_open(char *args) {
   char *token = strtok(args, " ");
   while (token != NULL) {
     switch (token) {
@@ -216,7 +216,7 @@ static int cmd_open() {
         printf("diff is on\n");
         break;
       default:
-        printf("Unknown argument: %c", token);
+        printf("Unknown argument: %s", token);
     }
     token = strtok(NULL, " ");
   }
