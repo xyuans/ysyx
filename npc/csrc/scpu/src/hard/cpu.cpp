@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <stdio.h>
 
-extern trace_diff_state;
+extern TraceDiffState trace_diff_state;
 
 NPCState npc_state;
 uint32_t cur_pc; 
@@ -39,7 +39,6 @@ void sim_init()
 	contextp->traceEverOn(true); 
 	top->trace(tfp, 1);
 	tfp->open("cpu_wave.fst");
-  print_wave = true;
 
   trace_init();
 }
