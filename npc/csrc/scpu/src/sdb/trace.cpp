@@ -64,11 +64,11 @@ void trace_exit() {
 // 放在cpu_exec中
 void trace_diff() {
   char *p = logbuf;
-  p += sprintf(logbuf, "--------\npc:0x%08x  steps:%lu\n", cur_pc, steps);
+  p += sprintf(p, "--------\npc:0x%08x  steps:%lu\n", cur_pc, steps);
   // itrace一直开启，区别在于写不写入文件
-  p += sprintf(logbuf, "i:%08x  ", cur_inst);
+  p += sprintf(p, "i:%08x  ", cur_inst);
   // 反汇编，将结果写入logbuf
-  disassemble(logbuf, sizeof(logbuf), cur_pc, (uint8_t *)&cur_inst, 4);
-  iringbuf_write(logbuf);
+  disassemble(p, sizeof(logbuf), cur_pc, (uint8_t *)&cur_inst, 4);
+  iringbuf_write(p);
   if (trace_diff_state.itrace == true) fprintf(file, "%s\n", logbuf);
 }
