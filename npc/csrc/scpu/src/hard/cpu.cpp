@@ -8,6 +8,7 @@
 #include <stdio.h>
 
 extern TraceDiffState trace_diff_state;
+extern bool trace_on;
 
 NPCState npc_state;
 uint32_t cur_pc; 
@@ -41,7 +42,6 @@ void sim_init()
 	top->trace(tfp, 1);
 	tfp->open("cpu_wave.fst");
 
-  trace_init();
 }
 
 // 区别与有无clk
@@ -62,7 +62,6 @@ void sim_exit()
   // Destroy model
   delete top;
 
-  trace_exit();
 }
 
 
@@ -102,11 +101,13 @@ void cpu_exec(uint64_t n) {
   
   for (int i = 0; i < n; i++) {
     print_step = (n < 11);
+
     exec_once();
     // 把追踪信息写入log文件,diff test
-    trace_diff();
-    if (print_step) logbuf_print();
-
+    if (trace_on) {
+      trace();
+      if (print_step) logbuf_print();
+    }
     // 执行完一步就检查一下运行状态
     if (npc_state.state == NPC_STOP) {
       printf("final pc is: %x, steps is: %lu\n", npc_state.halt_pc, steps);

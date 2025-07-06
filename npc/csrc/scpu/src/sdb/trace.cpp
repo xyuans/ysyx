@@ -21,6 +21,7 @@ typedef struct RingBuf {
 static RingBuf iringbuf;
 
 TraceDiffState trace_diff_state = {false, false, false, false, false};
+
 static char logbuf[128];
 
 extern uint32_t cur_pc;
@@ -49,7 +50,7 @@ void iringbuf_print() {
   printf("-->%s\n", iringbuf.buf[cur]);
 }
 
-void logbuf_print() {
+static void logbuf_print() {
   printf("%s\n", logbuf);
 }
 
@@ -157,7 +158,8 @@ void ftrace_init(char *filename) {
   return;
 }
 
-char *ftrace(char *pbuf) {
+int ftrace(char *pbuf) {
+  char *buf_start = pbuf;
   if (symlist.exist == false) return pbuf;
   // 函数调用栈
   typedef struct Fun_Stat {
@@ -179,7 +181,7 @@ char *ftrace(char *pbuf) {
       }
     }
     fun_stat.p = index;
-    pbuf += sprintf(pbuf, "%2d ret  [#addr:%x] #%s\n", index, cur_pc, symlist.list[fun_stat.stat[index]].name);
+    pbuf += sprintf(pbuf, "f:%2d ret  [#addr:%x] #%s\n", index, cur_pc, symlist.list[fun_stat.stat[index]].name);
   }
   //jal和jalr
   else if ((cur_inst & 0x7f) == 0x6f || (cur_inst & 0x707f) == 0x67){   // 0x6f=11011_11
@@ -191,18 +193,22 @@ char *ftrace(char *pbuf) {
           exit(-1);
         }
         fun_stat.stat[fun_stat.p] = i;  // 将调用过的函数写入栈中以便return时检查
-        pbuf += sprintf(pbuf, "%2d call [@addr:%x] @%s\n", fun_stat.p, \
+        pbuf += sprintf(pbuf, "f:%2d call [@addr:%x] @%s\n", fun_stat.p, \
               symlist.list[i].addr, symlist.list[i].name);
       }
     }
   }
-  return pbuf;
+  return (int)(buf_start-pbuf);
 }
 
-// 放在sim_init中
-void trace_init() {
+
+void trace_init(char *elf) {
+  if (elf == NULL) {
+    printf("elf file is NULL\n");
+    exit(-1);
+  }
   init_disasm();  // itrace,反汇编
-  ftrace_init("dummy-riscv32e-npc.elf");
+  ftrace_init(elf);
   file = fopen("trace-log.txt", "w");
 
   if (file == NULL) {
@@ -210,7 +216,6 @@ void trace_init() {
 
     exit(1);
   }
-  return;
 }
 
 
@@ -223,18 +228,24 @@ void trace_exit() {
   symlist.list == NULL;
 }
 
+// 根据print_step来选择是否把trace(itrace, ftrace, mtrace)信息写入logbuf，
+// 根据log_write(全局变量)来选择写不写入log文件中
 // 放在cpu_exec中
-void trace_diff() {
+void trace() {
+  
   char *p = logbuf;
-  p += sprintf(p, "--------\npc:0x%08x  steps:%lu\n", cur_pc, steps);
-  // itrace一直开启，区别在于写不写入文件
-  p += sprintf(p, "i:0x%08x  ", cur_inst);
+  // 基本追踪信息
+  p += sprintf(p, "------\npc:0x%08x  inst:0x%08x  steps:%lu\n", cur_pc, steps); 
   // 反汇编，将结果写入logbuf
-  disassemble(p, sizeof(logbuf), cur_pc, (uint8_t *)&cur_inst, 4);
-  iringbuf_write(p);  // 只是将itrace结果写入iringbuf
-  if (trace_diff_state.itrace == true) fprintf(file, "%s\n", logbuf);
-  if (trace_diff_state.ftrace == true) {
-    p = ftrace(p);
+  if (trace_diff_state.ftrace) {
+    p += ftrace(p);
+  }
+  if (trace_diff_state.itrace) {
+    p += sprintf(p, "i:");
+    disassemble(p, sizeof(logbuf), cur_pc, (uint8_t *)&cur_inst, 4);
+    iringbuf_write(p);  // 只是将itrace结果写入iringbuf
+  }
+  if (log_write) {
     fprintf(file, "%s\n", logbuf);
   }
 }

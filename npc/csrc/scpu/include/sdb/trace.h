@@ -13,6 +13,6 @@ void iringbuf_print();
 void logbuf_print();
 void trace_init();
 void trace_exit();
-void trace_diff();
+void trace();
 
 #endif
