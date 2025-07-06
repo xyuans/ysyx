@@ -28,6 +28,7 @@ extern uint32_t cur_pc;
 extern uint32_t cur_inst;
 extern uint32_t next_pc;
 extern uint64_t steps;
+extern bool log_write;
 
 static FILE *file = NULL;
 
@@ -50,7 +51,7 @@ void iringbuf_print() {
   printf("-->%s\n", iringbuf.buf[cur]);
 }
 
-static void logbuf_print() {
+void logbuf_print() {
   printf("%s\n", logbuf);
 }
 
@@ -160,7 +161,7 @@ void ftrace_init(char *filename) {
 
 int ftrace(char *pbuf) {
   char *buf_start = pbuf;
-  if (symlist.exist == false) return pbuf;
+  if (symlist.exist == false) return 0;
   // 函数调用栈
   typedef struct Fun_Stat {
     int stat[64];
@@ -235,7 +236,7 @@ void trace() {
   
   char *p = logbuf;
   // 基本追踪信息
-  p += sprintf(p, "------\npc:0x%08x  inst:0x%08x  steps:%lu\n", cur_pc, steps); 
+  p += sprintf(p, "------\npc:0x%08x  inst:0x%08x  steps:%lx\n", cur_pc, cur_inst, steps); 
   // 反汇编，将结果写入logbuf
   if (trace_diff_state.ftrace) {
     p += ftrace(p);
