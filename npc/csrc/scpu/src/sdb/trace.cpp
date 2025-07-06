@@ -18,7 +18,7 @@ extern uint32_t cur_inst;
 static FILE *file = NULL;
 
 extern "C" void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
-
+extern "C" void init_disasm();
 static void iringbuf_write(char *str) {
   int cur = (iringbuf.cur + 1) % 16;
   iringbuf.cur = cur;
@@ -42,6 +42,7 @@ void logbuf_print() {
 
 // 放在sim_init中
 void trace_init() {
+  init_disasm();
   file = fopen("trace-log.txt", "w");
 
   if (file == NULL) {
