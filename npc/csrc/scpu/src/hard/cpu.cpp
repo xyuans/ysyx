@@ -20,7 +20,7 @@ static const char *regs[] = {
   "a6", "a7", "s2", "s3", "s4", "s5", "s6", "s7",
   "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
 };
-static uint32_t steps;
+static uint64_t steps;
 static bool print_step = false;
 
 static VerilatedContext* contextp = NULL;
@@ -108,7 +108,7 @@ void cpu_exec(uint64_t n) {
 
     // 执行完一步就检查一下运行状态
     if (npc_state.state == NPC_STOP) {
-      printf("final pc is: %x, steps is: %d\n", npc_state.halt_pc, steps);
+      printf("final pc is: %x, steps is: %lu\n", npc_state.halt_pc, steps);
       if (npc_state.halt_ret == 0) {
         printf("HIT GOOD TRAP\n");
       }

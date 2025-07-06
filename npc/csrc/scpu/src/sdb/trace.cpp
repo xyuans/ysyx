@@ -15,6 +15,8 @@ static char logbuf[128];
 
 extern uint32_t cur_pc;
 extern uint32_t cur_inst;
+extern uint64_t steps;
+
 static FILE *file = NULL;
 
 extern "C" void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
@@ -37,7 +39,7 @@ void iringbuf_print() {
 }
 
 void logbuf_print() {
-  printf("%s", logbuf);
+  printf("%s\n", logbuf);
 }
 
 // 放在sim_init中
@@ -61,9 +63,12 @@ void trace_exit() {
 
 // 放在cpu_exec中
 void trace_diff() {
+  char *p = logbuf;
+  p += sprintf(file, "--------\npc:0x%08x  steps:%lu\n", cur_pc, steps);
   // itrace一直开启，区别在于写不写入文件
+  p += sprintf(file, "i:%08x  ");
   // 反汇编，将结果写入logbuf
   disassemble(logbuf, sizeof(logbuf), cur_pc, (uint8_t *)&cur_inst, 4);
   iringbuf_write(logbuf);
-  if (trace_diff_state.itrace == true) fprintf(file, "%s", logbuf);
+  if (trace_diff_state.itrace == true) fprintf(file, "%s\n", logbuf);
 }
