@@ -228,7 +228,7 @@ void trace_diff() {
   char *p = logbuf;
   p += sprintf(p, "--------\npc:0x%08x  steps:%lu\n", cur_pc, steps);
   // itrace一直开启，区别在于写不写入文件
-  p += sprintf(p, "i:%0x08x  ", cur_inst);
+  p += sprintf(p, "i:0x%08x  ", cur_inst);
   // 反汇编，将结果写入logbuf
   disassemble(p, sizeof(logbuf), cur_pc, (uint8_t *)&cur_inst, 4);
   iringbuf_write(p);  // 只是将itrace结果写入iringbuf
