@@ -234,7 +234,7 @@ void trace_diff() {
   iringbuf_write(p);  // 只是将itrace结果写入iringbuf
   if (trace_diff_state.itrace == true) fprintf(file, "%s\n", logbuf);
   if (trace_diff_state.ftrace == true) {
-    p += ftrace(p);
+    p = ftrace(p);
     fprintf(file, "%s\n", logbuf);
   }
 }
