@@ -37,7 +37,7 @@ static int parse_args(int argc, char *argv[]) {
 
 int main(int argc, char *argv[]) {
   // 解析参数
-  parse_args();
+  parse_args(argc, argv[]);
 
   sim_init();
   // 将程序读入内存，并打印前10个字节的值
