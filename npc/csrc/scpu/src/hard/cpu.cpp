@@ -84,11 +84,10 @@ extern "C" void ebreak() {
 void exec_once() {
   cur_pc = top->pc;  // 进行一步仿真之后,pc值会更新为下一条指令位置。
   top->inst = pmem_read(top->pc);
-  next_pc = top->pc;
   cur_inst = top->inst;
-  
   steps++;
   step_and_dump_wave();
+  next_pc = top->pc;
 }
 
 void cpu_exec(uint64_t n) {
