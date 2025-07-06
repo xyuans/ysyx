@@ -88,7 +88,7 @@ void ftrace_init(char *filename) {
 		exit(-1);
 	}
 	
-	mem = mmap(NULL, st.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
+	mem = (uint8_t *)mmap(NULL, st.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
 	if(mem == MAP_FAILED) {
 		perror("mmap");
 		close(fd);
@@ -139,7 +139,7 @@ void ftrace_init(char *filename) {
 	
 	// 将fun信息提取出来
 	symlist.count = funtab_num;
-	SymNode *funtab = malloc(sizeof(SymNode)*funtab_num);
+	SymNode *funtab = (SymNode *)malloc(sizeof(SymNode)*funtab_num);
 	int m = 0;
 	for (int i = 0; i < symtab_num; i++) {
 		if ((symtab[i].st_info & 0x0f) == STT_FUNC) {
@@ -152,12 +152,13 @@ void ftrace_init(char *filename) {
   symlist.exist = true;
 	symlist.list = funtab;
 	
-	clos(fd);
+	close(fd);
+  munmap(mem, st.st_size);
   return;
 }
 
 char *ftrace(char *pbuf) {
-  if (symlist.exit == false) return;
+  if (symlist.exist == false) return pbuf;
   // 函数调用栈
   typedef struct Fun_Stat {
     int stat[64];
@@ -200,8 +201,8 @@ char *ftrace(char *pbuf) {
 
 // 放在sim_init中
 void trace_init() {
-  init_disasm();  // itrace
-  ftrace_init();
+  init_disasm();  // itrace,反汇编
+  ftrace_init("dummy-riscv32e-npc.elf");
   file = fopen("trace-log.txt", "w");
 
   if (file == NULL) {
