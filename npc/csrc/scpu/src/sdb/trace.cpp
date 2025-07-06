@@ -52,7 +52,7 @@ void iringbuf_print() {
 }
 
 void logbuf_print() {
-  printf("%s\n", logbuf);
+  printf("%s\n----\n", logbuf);
 }
 
 
@@ -194,7 +194,7 @@ int ftrace(char *pbuf) {
           exit(-1);
         }
         fun_stat.stat[fun_stat.p] = i;  // 将调用过的函数写入栈中以便return时检查
-        pbuf += sprintf(pbuf, "f:%2d call [@addr:%x] @%s\n", fun_stat.p, \
+        pbuf += sprintf(pbuf, "f: %02d call [@addr:%x] @%s\n", fun_stat.p, \
               symlist.list[i].addr, symlist.list[i].name);
       }
     }
@@ -242,11 +242,11 @@ void trace() {
     p += ftrace(p);
   }
   if (trace_diff_state.itrace) {
-    p += sprintf(p, "i:");
+    p += sprintf(p, "i: ");
     disassemble(p, sizeof(logbuf), cur_pc, (uint8_t *)&cur_inst, 4);
     iringbuf_write(p);  // 只是将itrace结果写入iringbuf
   }
   if (log_write) {
-    fprintf(file, "%s\n", logbuf);
+    fprintf(file, "%s\n----\n", logbuf);
   }
 }
