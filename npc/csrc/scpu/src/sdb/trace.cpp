@@ -199,7 +199,7 @@ int ftrace(char *pbuf) {
       }
     }
   }
-  return (int)(buf_start-pbuf);
+  return (int)(pbuf - buf_start);
 }
 
 
