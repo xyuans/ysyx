@@ -12,7 +12,7 @@ TOP   ?= top
 
 CXXFLAGS += $(addprefix -I, $(INC_PATH)) -g
 LDFLAGS  += -L${NPC_HOME}/build/
-LDLIBS   += -lreadline -ldisasm
+LDLIBS   += -lreadline -ldisasm -ldl
 .PHONY: sim
 sim: 
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
