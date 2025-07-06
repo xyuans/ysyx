@@ -115,7 +115,7 @@ void cpu_exec(uint64_t n) {
         printf("HIT GOOD TRAP\n");
       }
       else {
-        iringbuf_print();
+        if (trace_on) iringbuf_print();
         printf("HIT BAD TRAP\n");
       }
       break;
