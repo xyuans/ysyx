@@ -26,7 +26,7 @@ static int parse_args(int argc, char *argv[]) {
       default:
         printf("Usage: %s [OPTION...] IMAGE [args]\n\n", argv[0]);
         printf("\t-l,                     output log to trace-log.txt\n");
-        printf("\t-t,--trace=ELF_FIEL    open trace function\n"));
+        printf("\t-t,--trace=ELF_FIEL    open trace function\n");
         printf("\n");
         exit(0);
     }

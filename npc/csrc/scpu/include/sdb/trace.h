@@ -11,7 +11,7 @@ typedef struct TraceDiffState {
 
 void iringbuf_print();
 void logbuf_print();
-void trace_init();
+void trace_init(char *elf);
 void trace_exit();
 void trace();
 
