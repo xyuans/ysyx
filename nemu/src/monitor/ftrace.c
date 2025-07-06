@@ -99,7 +99,9 @@ void ftrace_init(char *filename) {
 
   symlist.exist = true;
 	symlist.list = funtab;
-	
+  
+  munmap(mem, st.st_size);
+  close(fd);
 	return;
 }
 #endif
