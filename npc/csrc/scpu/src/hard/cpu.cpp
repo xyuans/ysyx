@@ -17,7 +17,7 @@ uint32_t cur_inst;
 uint32_t next_pc;
 
 // 为支持打印寄存器
-static const char *regs[] = {
+const char *regs[] = {
   "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
   "s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5",
   "a6", "a7", "s2", "s3", "s4", "s5", "s6", "s7",
@@ -114,8 +114,8 @@ void cpu_exec(uint64_t n) {
       diff_check = difftest_step();
       if (diff_check == false) {
         npc_state.state = NPC_STOP;
+        npc_state.halt_ret == 1;
         printf("can not catch up with ref with pc:0x%08x", cur_pc);
-        reg_display();
       }
     }
     // 执行完一步就检查一下运行状态

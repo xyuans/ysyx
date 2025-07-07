@@ -9,7 +9,7 @@ static void (*ref_difftest_exec)();
 static void (*get_ref_r)(CPU_state* ref_r);
 
 extern void get_dut_r(CPU_state* dut_r);
-
+const char *regs[];
 void init_difftest(char *ref_so_file, long img_size) {
   assert(ref_so_file != NULL);
 
@@ -57,5 +57,16 @@ bool difftest_step() {
   get_dut_r(&dut_r);
   get_ref_r(&ref_r);
 
-  return checkregs(&ref_r, &dut_r);
+  if(!checkregs(&ref_r, &dut_r)) {
+    printf("can not catch up with ref with pc:0x%08x", cur_pc);
+    printf("npc:\n %-10s%-#15x%-15d\n", "pc", dut_r->pc, dut->pc);
+    for (int i=0; i<32; i++) {
+      printf(" %-10s%-#15x%-15d\n", regs[i], dut_r->gpr[i], dut_r->gpr[i]);
+    }
+    printf("--------\nnemu:\n %-10s%-#15x%-15d\n", "pc", ref_r->pc, ref_r->pc);
+    for (int i=0; i<32; i++) {
+      printf(" %-10s%-#15x%-15d\n", regs[i], ref_r->gpr[i], ref_r->gpr[i]);
+    }
+    return false;
+  }
 }
