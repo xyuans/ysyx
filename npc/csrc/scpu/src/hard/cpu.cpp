@@ -145,5 +145,5 @@ void get_dut_r (CPU_state *dut_r) {
   for (int i = 0; i < 32; i++) {
     dut_r->gpr[i] = top->rootp->top__DOT__rf__DOT__regs[i];
   }
-  dut_r->pc = cur_pc;
+  dut_r->pc = next_pc;
 }
