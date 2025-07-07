@@ -247,6 +247,6 @@ void trace() {
     iringbuf_write(p);  // 只是将itrace结果写入iringbuf
   }
   if (log_write) {
-    fprintf(file, "%s\n----\n", logbuf);
+    fprintf(file, "%s\n", logbuf);
   }
 }
