@@ -12,7 +12,7 @@ extern bool trace_on;
 extern bool diff_on;
 
 NPCState npc_state;
-uint32_t cur_pc; 
+uint32_t cur_pc = 0x80000000; 
 uint32_t cur_inst;
 uint32_t next_pc;
 
