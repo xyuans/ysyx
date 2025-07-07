@@ -1,4 +1,5 @@
 #include "common.h"
+#include <dlfcn.h>
 static void (*ref_difftest_memcpy)(uint8_t *src, size_t n);
 static void (*ref_difftest_regcpy)(CPU_state *dut_r);
 static void (*get_ref_r)(CPU_state* ref_r);
