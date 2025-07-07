@@ -112,7 +112,11 @@ void cpu_exec(uint64_t n) {
     if (diff_on) {
       bool diff_check;
       diff_check = difftest_step();
-      if (diff_check == false) npc_state.state = NPC_STOP;
+      if (diff_check == false) {
+        npc_state.state = NPC_STOP;
+        printf("can not catch up with ref with pc:0x%08x", cur_pc);
+        reg_display();
+      }
     }
     // 执行完一步就检查一下运行状态
     if (npc_state.state == NPC_STOP) {

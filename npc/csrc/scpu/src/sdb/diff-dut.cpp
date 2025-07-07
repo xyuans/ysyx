@@ -1,7 +1,8 @@
 #include "common.h"
 #include <dlfcn.h>
 #include <assert.h>
-#define NULL 0
+#include <stdio.h>
+
 static void (*ref_difftest_memcpy)(uint8_t *src, size_t n);
 static void (*ref_difftest_regcpy)(CPU_state *dut_r);
 static void (*ref_difftest_exec)();
@@ -36,6 +37,7 @@ void init_difftest(char *ref_so_file, long img_size) {
   CPU_state dut_r;
   get_dut_r(&dut_r);
   ref_difftest_regcpy(&dut_r);
+  printf("difftest is on\n");
 }
 
 static bool checkregs(CPU_state *ref_r, CPU_state *dut_r) {
