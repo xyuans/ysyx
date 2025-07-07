@@ -13,6 +13,11 @@ typedef struct {
   uint32_t halt_ret;     // 停止时的返回值或错误码
 } NPCState;
 
+typedef struct {
+  uint32_t gpr[32];
+  uint32_t pc;
+} CPU_state;
+
 void sim_init();
 void step_and_dump_wave();
 void sim_exit();

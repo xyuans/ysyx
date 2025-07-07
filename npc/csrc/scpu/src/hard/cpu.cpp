@@ -9,6 +9,7 @@
 
 extern TraceDiffState trace_diff_state;
 extern bool trace_on;
+extern bool diff_on;
 
 NPCState npc_state;
 uint32_t cur_pc; 
@@ -108,6 +109,11 @@ void cpu_exec(uint64_t n) {
       trace();
       if (print_step) logbuf_print();
     }
+    if (diff_on) {
+      bool diff_check;
+      diff_check = difftest_step();
+      if (diff_check == false) npc_state.state = NPC_STOP;
+    }
     // 执行完一步就检查一下运行状态
     if (npc_state.state == NPC_STOP) {
       printf("final pc is: %x, steps is: %lu\n", npc_state.halt_pc, steps);
@@ -131,4 +137,9 @@ void reg_display() {
   }
 }
 
-
+void get_dut_r (CPU_state *dut_r) {
+  for (int i = 0; i < 32; i++) {
+    dut_r->gpr[i] = top->rootp->top__DOT__rf__DOT__regs[i];
+  }
+  dut_r->pc = cur_pc;
+}

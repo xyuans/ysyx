@@ -211,10 +211,6 @@ static int cmd_open(char *args) {
         trace_diff_state.ftrace = true;
         printf("ftrace is on\n");
         break;
-      case 'd':
-        trace_diff_state.diff = true;
-        printf("diff is on\n");
-        break;
       default:
         printf("Unknown argument: %s", token);
     }

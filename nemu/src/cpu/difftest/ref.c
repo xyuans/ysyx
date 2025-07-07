@@ -19,22 +19,23 @@
 #include <memory/paddr.h>
 #include <cpu/decode.h>
 
-__EXPORT void difftest_memcpy(uint8_t *addr, uint8_t *buf, size_t n) {
+__EXPORT void difftest_memcpy(uint8_t *src, size_t n) {
+  uint8_t* addr = guest_to_host(CONFIG_MBASE);
   size_t i;
   for(i = 0; i < n; i++) {
-    addr[i] = buf[i];
+    addr[i] = src[i];
   }
 }
-
-__EXPORT void difftest_regcpy(CPU_state *ref_r, CPU_state *dut_r) {
+extern CPU_state cpu;
+__EXPORT void difftest_regcpy(CPU_state *dut_r) {
   for(int i = 0; i < 32; i++) {
-    ref_r->gpr[i] = ref_r->gpr[i];
+    cpu.gpr[i] = dut_r->gpr[i];
   }
-  ref_r->pc = ref_r->pc;
+  cpu.pc = dut_r->pc;
 }
 
 int isa_exec_once(Decode *s);
-extern CPU_state cpu;
+
 __EXPORT void difftest_exec() {
   
   Decode s;
@@ -55,7 +56,7 @@ __EXPORT void difftest_raise_intr(word_t NO) {
   assert(0);
 }
 
-__EXPORT void difftest_init(int port) {
+__EXPORT void difftest_init() {
   void init_mem();
   init_mem();
   /* Perform ISA dependent initialization. */

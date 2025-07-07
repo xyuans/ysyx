@@ -8,7 +8,7 @@
 
 static uint8_t mem[MEM_MAX];
 
-void mem_init(char* filename) {
+uint64_t mem_init(char* filename) {
   FILE* file = fopen(filename, "rb"); // 以二进制读模式打开文件
 
   if (file == NULL) {
@@ -35,6 +35,8 @@ void mem_init(char* filename) {
   for (int i = 0; i < 10; i++) {
     printf("size:%ld, size_r:%ld, mem[%d]:%x\n",size, size_r, i, mem[i]);
   }
+
+  return size;
 }
 
 uint32_t pmem_read(uint32_t addr) {
@@ -46,4 +48,6 @@ uint32_t pmem_read(uint32_t addr) {
   return *(uint32_t *)(mem+index);
 }
 
-
+uint8_t *guest_to_host(uint32_t addr) {
+  return &mem[addr];
+}

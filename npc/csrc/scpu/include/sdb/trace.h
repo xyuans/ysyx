@@ -6,7 +6,6 @@ typedef struct TraceDiffState {
   bool itrace;
   bool mtrace;
   bool ftrace;
-  bool diff;
 } TraceDiffState;
 
 void iringbuf_print();
