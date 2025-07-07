@@ -26,12 +26,11 @@ void init_difftest(char *ref_so_file, long img_size) {
   assert(ref_difftest_exec);
 
 
-  void (*ref_difftest_init)(int) = (void (*)(int))dlsym(handle, "difftest_init");
+  void (*ref_difftest_init)() = (void (*)())dlsym(handle, "difftest_init");
   assert(ref_difftest_init);
 
   get_ref_r = (void (*)(CPU_state*))dlsym(handle, "difftest_get_ref_r");
   assert(get_ref_r);
-
   ref_difftest_init();
   ref_difftest_memcpy(guest_to_host(0x80000000), img_size);
   CPU_state dut_r;
@@ -44,7 +43,7 @@ static bool checkregs(CPU_state *ref_r, CPU_state *dut_r) {
     if(ref_r->gpr[i] != dut_r->gpr[i])
     return false;
   }
-  if (ref_r->pc == cpu.pc) return true;
+  if (ref_r->pc == dut_r->pc) return true;
   return false;
 }
 
