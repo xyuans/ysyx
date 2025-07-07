@@ -115,7 +115,7 @@ void cpu_exec(uint64_t n) {
       diff_check = difftest_step();
       if (diff_check == false) {
         npc_state.state = NPC_STOP;
-        npc_state.halt_ret == 1;
+        npc_state.halt_ret = 1;
       }
     }
     // 执行完一步就检查一下运行状态
@@ -134,7 +134,7 @@ void cpu_exec(uint64_t n) {
 }
 
 void reg_display() {
-  printf(" %-10s%-#15x%-15d\n", "pc", cur_pc, cur_pc);
+  printf(" %-10s%-#15x%-15d\n", "pc", next_pc, next_pc);
   for (int i=0; i<32; i++) {
     printf(" %-10s%-#15x%-15d\n", regs[i], top->rootp->top__DOT__rf__DOT__regs[i],
            top->rootp->top__DOT__rf__DOT__regs[i]);

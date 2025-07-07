@@ -236,7 +236,7 @@ void trace() {
   
   char *p = logbuf;
   // 基本追踪信息
-  p += sprintf(p, "------\npc:0x%08x  inst:0x%08x  steps:%lx\n", cur_pc, cur_inst, steps); 
+  p += sprintf(p, "\npc:0x%08x  inst:0x%08x  steps:%ld\n", cur_pc, cur_inst, steps); 
   // 反汇编，将结果写入logbuf
   if (trace_diff_state.ftrace) {
     p += ftrace(p);
