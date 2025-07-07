@@ -22,7 +22,7 @@ static int parse_args(int argc, char *argv[]) {
     switch (o) {
       case 'l': log_write = true; break;
       case 't': elf_file = optarg; trace_on = true; break;  // 初始化
-      case 1:   img_file = optarg; break 0;
+      case 1:   img_file = optarg; break;
       default:
         printf("Usage: %s [OPTION...] IMAGE [args]\n\n", argv[0]);
         printf("\t-l,                     output log to trace-log.txt\n");
