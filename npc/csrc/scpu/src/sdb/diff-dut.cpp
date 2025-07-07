@@ -1,9 +1,13 @@
 #include "common.h"
 #include <dlfcn.h>
+#include <assert.h>
+#define NULL 0
 static void (*ref_difftest_memcpy)(uint8_t *src, size_t n);
 static void (*ref_difftest_regcpy)(CPU_state *dut_r);
+static void (*difftest_exec)()
 static void (*get_ref_r)(CPU_state* ref_r);
 
+extern get_dut_r;
 
 void init_difftest(char *ref_so_file, long img_size) {
   assert(ref_so_file != NULL);
@@ -12,20 +16,20 @@ void init_difftest(char *ref_so_file, long img_size) {
   handle = dlopen(ref_so_file, RTLD_LAZY);
   assert(handle);
 
-  ref_difftest_memcpy = dlsym(handle, "difftest_memcpy");
+  ref_difftest_memcpy = (void (*)(uint8_t*, size_t))dlsym(handle, "difftest_memcpy");
   assert(ref_difftest_memcpy);
 
-  ref_difftest_regcpy = dlsym(handle, "difftest_regcpy");
+  ref_difftest_regcpy = (void (*)(CPU_state*))dlsym(handle, "difftest_regcpy");
   assert(ref_difftest_regcpy);
 
-  ref_difftest_exec = dlsym(handle, "difftest_exec");
+  ref_difftest_exec = (void (*)())dlsym(handle, "difftest_exec");
   assert(ref_difftest_exec);
 
 
-  void (*ref_difftest_init)(int) = dlsym(handle, "difftest_init");
+  void (*ref_difftest_init)(int) = (void (*)(int))dlsym(handle, "difftest_init");
   assert(ref_difftest_init);
 
-  get_ref_r = dlsym(handle, "difftest_get_ref_r");
+  get_ref_r = (void (*)(CPU_state*))dlsym(handle, "difftest_get_ref_r");
   assert(get_ref_r);
 
   ref_difftest_init();
