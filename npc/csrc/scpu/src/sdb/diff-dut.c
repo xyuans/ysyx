@@ -43,7 +43,7 @@ static bool checkregs(CPU_state *ref_r, CPU_state *dut_r) {
   return false;
 }
 
-bool difftest_step(uint32_t pc, uint32_t npc) {
+bool difftest_step() {
   // nemu执行一步
   ref_difftest_exec();
   CPU_state dur_r;
