@@ -69,7 +69,8 @@ void sim_exit()
 void reset(int n) {
   top->rst = 1;
   while (n-- > 0) step_and_dump_wave();
-  top->rst = 0; step_and_dump_wave();
+  top->rst = 0; 
+  //step_and_dump_wave(); // 逻辑上不应该有这行代码，因为会导致在exe_once()外多执行一步
 }
 
 
@@ -115,7 +116,6 @@ void cpu_exec(uint64_t n) {
       if (diff_check == false) {
         npc_state.state = NPC_STOP;
         npc_state.halt_ret == 1;
-        printf("can not catch up with ref with pc:0x%08x", cur_pc);
       }
     }
     // 执行完一步就检查一下运行状态
