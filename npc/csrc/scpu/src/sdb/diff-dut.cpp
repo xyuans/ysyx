@@ -4,10 +4,10 @@
 #define NULL 0
 static void (*ref_difftest_memcpy)(uint8_t *src, size_t n);
 static void (*ref_difftest_regcpy)(CPU_state *dut_r);
-static void (*difftest_exec)()
+static void (*ref_difftest_exec)()
 static void (*get_ref_r)(CPU_state* ref_r);
 
-extern get_dut_r;
+extern void get_dut_r(CPU_state* dut_r);
 
 void init_difftest(char *ref_so_file, long img_size) {
   assert(ref_so_file != NULL);
@@ -51,10 +51,10 @@ static bool checkregs(CPU_state *ref_r, CPU_state *dut_r) {
 bool difftest_step() {
   // nemu执行一步
   ref_difftest_exec();
-  CPU_state dur_r;
+  CPU_state dut_r;
   CPU_state ref_r;
   get_dut_r(&dur_r);
   get_ref_r(&ref_r);
 
-  return checkregs(&ref_r, &dut_r));
+  return checkregs(&ref_r, &dut_r);
 }
