@@ -49,5 +49,6 @@ uint32_t pmem_read(uint32_t addr) {
 }
 
 uint8_t *guest_to_host(uint32_t addr) {
-  return &mem[addr];
+  uint32_t index = addr - 0x80000000;
+  return &mem[index];
 }
