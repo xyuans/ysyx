@@ -20,7 +20,7 @@ typedef struct RingBuf {
 
 static RingBuf iringbuf;
 
-TraceDiffState trace_diff_state = {false, false, false, false, false};
+TraceDiffState trace_diff_state = {false, false, false, false};
 
 static char logbuf[128];
 
