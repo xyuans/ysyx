@@ -201,8 +201,8 @@ static char *ftrace(char *pbuf) {
   return pbuf;
 }
 
-extern access_addr;
-static void mtrace (char *pbuf) {
+extern uint32_t access_addr;
+static char *mtrace (char *pbuf) {
   uint32_t op = cur_inst & 0b1111111;
   if (op == 0b0000011) {
     pbuf += sprintf(pbuf, "m:read at addr:0x%08x\n", access_addr);
