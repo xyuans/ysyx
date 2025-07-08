@@ -41,12 +41,15 @@ void init_difftest(char *ref_so_file, long img_size) {
 }
 
 static bool checkregs(CPU_state *ref_r, CPU_state *dut_r) {
+  if (ref_r->pc != dut_r->pc) {
+    return -1;
+  }
   for (int i = 0; i < 32; i++) {
     if(ref_r->gpr[i] != dut_r->gpr[i])
-    return false;
+    return i;
   }
-  if (ref_r->pc == dut_r->pc) return true;
-  return false;
+  
+  return -2;
 }
 
 bool difftest_step() {
@@ -57,15 +60,16 @@ bool difftest_step() {
   get_dut_r(&dut_r);
   get_ref_r(&ref_r);
 
+  int index = checkregs(&ref_r, &dut_r); 
   if(!checkregs(&ref_r, &dut_r)) {
-    printf("can not catch up with ref\n");
-    printf("npc:\n %-10s%-#15x%-15d\n", "pc", dut_r.pc, dut_r.pc);
+    printf("can not catch up with ref\nerror reg: %d\nnpc:\n", index);
+    printf(" -1%-10s%-#15x%-15d\n", "pc", dut_r.pc, dut_r.pc);
     for (int i=0; i<32; i++) {
-      printf(" %-10s%-#15x%-15d\n", regs[i], dut_r.gpr[i], dut_r.gpr[i]);
+      printf("%2d%-10s%-#15x%-15d\n", i, regs[i], dut_r.gpr[i], dut_r.gpr[i]);
     }
-    printf("--------\nnemu:\n %-10s%-#15x%-15d\n", "pc", ref_r.pc, ref_r.pc);
+    printf("--------\nnemu:\n% -1%-10s%-#15x%-15d\n", "pc", ref_r.pc, ref_r.pc);
     for (int i=0; i<32; i++) {
-      printf(" %-10s%-#15x%-15d\n", regs[i], ref_r.gpr[i], ref_r.gpr[i]);
+      printf("%2d%-10s%-#15x%-15d\n", i, regs[i], ref_r.gpr[i], ref_r.gpr[i]);
     }
     return false;
   }

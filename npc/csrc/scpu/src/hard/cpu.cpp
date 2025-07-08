@@ -120,7 +120,7 @@ void cpu_exec(uint64_t n) {
     }
     // 执行完一步就检查一下运行状态
     if (npc_state.state == NPC_STOP) {
-      printf("final pc is: %x, steps is: %lu\n", npc_state.halt_pc, steps);
+      printf("final pc is: %x, steps is: %lu\n", cur_pc, steps);
       if (npc_state.halt_ret == 0) {
         printf("HIT GOOD TRAP\n");
       }
