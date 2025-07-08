@@ -67,7 +67,7 @@ bool difftest_step() {
     for (int i=0; i<32; i++) {
       printf("%2d%-10s%-#15x%-15d\n", i, regs[i], dut_r.gpr[i], dut_r.gpr[i]);
     }
-    printf("--------\nnemu:\n% -1%-10s%-#15x%-15d\n", "pc", ref_r.pc, ref_r.pc);
+    printf("--------\nnemu:\n -1%-10s%-#15x%-15d\n", "pc", ref_r.pc, ref_r.pc);
     for (int i=0; i<32; i++) {
       printf("%2d%-10s%-#15x%-15d\n", i, regs[i], ref_r.gpr[i], ref_r.gpr[i]);
     }
