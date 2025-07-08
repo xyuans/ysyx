@@ -1,7 +1,9 @@
 #ifndef __COMMON_H__
 #define __COMMON_H__
 
-#include "memory.h"
-#include "sim.h"
+#include "hard/cpu.h"
+#include "hard/memory.h"
+#include "sdb/trace.h"
+#include "hard/diff-dut.h"
 
 #endif

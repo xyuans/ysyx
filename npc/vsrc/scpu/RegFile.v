@@ -11,7 +11,10 @@ module RegFile #(ADDR_WIDTH = 1, DATA_WIDTH = 1) (
   reg [DATA_WIDTH-1:0] regs [2**ADDR_WIDTH-1:0];
 
   always @(posedge clk) begin
-    if(we) regs[wa] <= wd;
+    if(we) begin
+      regs[wa] <= (wa != 0) ? wd : 0;
+      regs[0] <= 32'b0;
+    end
   end
   
   assign rd1 = (ra1 != 0) ? regs[ra1] : 0;

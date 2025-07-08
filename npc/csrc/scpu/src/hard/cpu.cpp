@@ -7,10 +7,14 @@
 #include <stdio.h>
 #include <stdio.h>
 
-// 控制是否打印指令和pc值
-static bool g_print_step = false;
+extern TraceDiffState trace_diff_state;
+extern bool trace_on;
+extern bool diff_on;
 
-static uint32_t pre_pc; 
+NPCState npc_state;
+uint32_t cur_pc = 0x80000000; 
+uint32_t cur_inst;
+uint32_t next_pc = 0x80000000;
 
 // 为支持打印寄存器
 const char *regs[] = {
@@ -19,58 +23,54 @@ const char *regs[] = {
   "a6", "a7", "s2", "s3", "s4", "s5", "s6", "s7",
   "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
 };
+uint64_t steps;
+static bool print_step = false;
 
-NPCState npc_state;
+static VerilatedContext* contextp = NULL;
+static VerilatedFstC* tfp = NULL;
+static Vtop *top = NULL;
 
-
-RingBuf iringbuf;
-
-VerilatedContext* contextp = NULL;
-VerilatedFstC* tfp = NULL;
-Vtop *top = NULL;
-
-bool print_wave = false;  // 是否打印波形
 
 // 仿真任何模块都可以使用这个代码块
-void sim_init(char *arg)
+void sim_init()
 {
 	contextp = new VerilatedContext;
 	top = new Vtop{contextp};
 	tfp = new VerilatedFstC;
 
-  if (arg == NULL) return;
-  if (strcmp(arg, "-w") == 0) {
-	  contextp->traceEverOn(true); 
-	  top->trace(tfp, 1);
-	  tfp->open("cpu_wave.fst");
-    print_wave = true;
-  }
+  // 波形写入初始化
+	contextp->traceEverOn(true); 
+	top->trace(tfp, 1);
+	tfp->open("cpu_wave.fst");
+
 }
 
 // 区别与有无clk
 void step_and_dump_wave()
 { 
-  top->clk = 0;top->eval();contextp->timeInc(1);
-  if (print_wave) tfp->dump(contextp->time());
+  top->clk = 0;top->eval();contextp->timeInc(1);  // 即使不写波形，仍需调用contextp->timeInc(1)
+  if (trace_diff_state.wtrace == true) tfp->dump(contextp->time());
 
   top->clk = 1;top->eval();contextp->timeInc(1);
-  if (print_wave) tfp->dump(contextp->time());
+  if (trace_diff_state.wtrace == true) tfp->dump(contextp->time());
 }
 
 
 void sim_exit()
 {
-	if (print_wave) tfp->close();
+	tfp->close();
   top->final();
   // Destroy model
   delete top;
+
 }
 
 
 void reset(int n) {
   top->rst = 1;
   while (n-- > 0) step_and_dump_wave();
-  top->rst = 0; step_and_dump_wave();
+  top->rst = 0; 
+  //step_and_dump_wave(); // 逻辑上不应该有这行代码，因为会导致在exe_once()外多执行一步
 }
 
 
@@ -81,24 +81,18 @@ extern "C" void ebreak() {
   printf("ebreak happen\n");
 }
 
+// 更新cur_pc, cur_inst, steps, 退进一步仿真
 void exec_once() {
-  pre_pc = top->pc;  // 进行一步仿真之后,pc值会更新为下一条指令位置。
+  cur_pc = top->pc;  // 进行一步仿真之后,pc值会更新为下一条指令位置。
   top->inst = pmem_read(top->pc);
-
-  int cur = (iringbuf.cur+1) % 16;
-  iringbuf.pc_buf[cur] = top->pc;
-  iringbuf.inst_buf[cur] = top->inst;
-  iringbuf.cur = cur;
-
+  cur_inst = top->inst;
+  steps++;
   step_and_dump_wave();
-  if (g_print_step) {
-    printf("top->inst:%08x, top->pc:%08x\n", top->inst, top->pc);
-  }
+  next_pc = top->pc;
 }
 
 void cpu_exec(uint64_t n) {
-  g_print_step = (n < 10);
-
+  // 检查运行状态
   switch (npc_state.state) {
     case NPC_STOP:
       printf("Program execution has ended. To restart the program, exit NPC and run again.\n");
@@ -108,21 +102,30 @@ void cpu_exec(uint64_t n) {
   }
   
   for (int i = 0; i < n; i++) {
-    exec_once();
-    
-    if (npc_state.state == NPC_STOP) {
-      printf("final pc is: %x\n", npc_state.halt_pc);
+    print_step = (n < 11);
 
+    exec_once();
+    // 把追踪信息写入log文件,diff test
+    if (trace_on) {
+      trace();
+      if (print_step) logbuf_print();
+    }
+    if (diff_on) {
+      bool diff_check;
+      diff_check = difftest_step();
+      if (diff_check == false) {
+        npc_state.state = NPC_STOP;
+        npc_state.halt_ret = 1;
+      }
+    }
+    // 执行完一步就检查一下运行状态
+    if (npc_state.state == NPC_STOP) {
+      printf("final pc is: %x, steps is: %lu\n", cur_pc, steps);
       if (npc_state.halt_ret == 0) {
         printf("HIT GOOD TRAP\n");
       }
       else {
-        int cur = (iringbuf.cur + 1) % 16;
-        for (int i = 0; i < 15; i++) {
-          printf("   pc:0x%x    inst:0x%x\n", iringbuf.pc_buf[cur], iringbuf.inst_buf[cur]);
-          cur = (cur + 1) % 16;
-        }
-        printf("-->pc:0x%x    inst:0x%x\n", iringbuf.pc_buf[cur], iringbuf.inst_buf[cur]);
+        if (trace_on) iringbuf_print();
         printf("HIT BAD TRAP\n");
       }
       break;
@@ -131,11 +134,16 @@ void cpu_exec(uint64_t n) {
 }
 
 void reg_display() {
-  printf(" %-10s%-#15x%-15d\n", "pc", pre_pc, pre_pc);
+  printf(" %-10s%-#15x%-15d\n", "pc", next_pc, next_pc);
   for (int i=0; i<32; i++) {
     printf(" %-10s%-#15x%-15d\n", regs[i], top->rootp->top__DOT__rf__DOT__regs[i],
            top->rootp->top__DOT__rf__DOT__regs[i]);
   }
 }
 
-
+void get_dut_r (CPU_state *dut_r) {
+  for (int i = 0; i < 32; i++) {
+    dut_r->gpr[i] = top->rootp->top__DOT__rf__DOT__regs[i];
+  }
+  dut_r->pc = next_pc;
+}

@@ -6,6 +6,10 @@
 
 #define ARRLEN(arr) (int)(sizeof(arr) / sizeof(arr[0]))
 
+
+
+extern TraceDiffState trace_diff_state;
+
 extern NPCState npc_state;
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
@@ -66,6 +70,7 @@ static int cmd_info(char *args);
 
 static int cmd_x(char *args);
 
+static int cmd_open(char *args);
 //static int cmd_d(char *args);
 
 static struct {
@@ -93,6 +98,11 @@ static struct {
     "print memory",
     cmd_x,
   },
+  {
+    "open",
+    "open wave trace/itrace/mtrace/ftrace/diff",
+    cmd_open
+  }
 };
  
 #define NR_CMD ARRLEN(cmd_table)
@@ -182,6 +192,33 @@ static int cmd_x(char *args) {
   return 0;
 }
 
+static int cmd_open(char *args) {
+  char *token = strtok(args, " ");
+  while (token != NULL) {
+    switch (*token) {
+      case 'w':
+        trace_diff_state.wtrace = true;
+        printf("wtrace is on\n");
+        break;
+      case 'i':
+        trace_diff_state.itrace = true;
+        printf("itrace is on\n");
+        break;
+      case 'm':
+        trace_diff_state.mtrace = true;
+        printf("mtrace is on\n");
+        break;
+      case 'f':
+        trace_diff_state.ftrace = true;
+        printf("ftrace is on\n");
+        break;
+      default:
+        printf("Unknown argument: %s", token);
+    }
+    token = strtok(NULL, " ");
+  }
+  return 0;
+}
 
 void sdb_mainloop() {
   for (char *str; (str = rl_gets()) != NULL; ) {         // 读取用户输入
