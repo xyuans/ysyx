@@ -41,7 +41,7 @@ uint64_t mem_init(char* filename) {
 
 
 uint32_t access_addr;
-extern "C" uint32_t pmem_read(uint32_t addr, bool mtrace_on) {
+extern "C" uint32_t pmem_read(uint32_t addr) {
   uint32_t index = addr - 0x80000000;
   if (index < 0 || index > MEM_MAX) {
     printf("pmem_read, pc: %08x, beyond MEM_MAX\n", addr);
@@ -56,9 +56,9 @@ extern "C" uint32_t pmem_read(uint32_t addr, bool mtrace_on) {
 // `wmask`中每比特表示`wdata`中1个字节的掩码,
 // 如`wmask = 0x3`代表只写入最低2个字节, 内存中的其它字节保持不变
 extern "C" void pmem_write(uint32_t waddr, uint32_t wdata, int len) {
-  uint32_t index = addr - 0x80000000;
+  uint32_t index = waddr - 0x80000000;
   if (index < 0 || index > MEM_MAX) {
-    printf("pmem_write, pc: %08x, beyond MEM_MAX\n", wdddr);
+    printf("pmem_write, pc: %08x, beyond MEM_MAX\n", waddr);
     exit(1);
   }
 
