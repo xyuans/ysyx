@@ -206,6 +206,7 @@ static int cmd_open(char *args) {
         break;
       case 'm':
         trace_diff_state.mtrace = true;
+        printf("mtrace is on\n");
         break;
       case 'f':
         trace_diff_state.ftrace = true;

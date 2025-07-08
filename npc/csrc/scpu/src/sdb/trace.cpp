@@ -246,12 +246,12 @@ void trace() {
   
   char *p = logbuf;
   // 基本追踪信息
-  p += sprintf(p, "\npc:0x%08x  inst:0x%08x  steps:%ld\n", cur_pc, cur_inst, steps); 
-  // ftrace和mtrace不会同时发生，会快一丢丢。
+  p += sprintf(p, "pc:0x%08x  inst:0x%08x  steps:%ld\n", cur_pc, cur_inst, steps); 
+  
   if (trace_diff_state.mtrace) {
     p = mtrace(p);
   }
-  else if (trace_diff_state.ftrace) {
+  if (trace_diff_state.ftrace) {
     p = ftrace(p);
   }
   if (trace_diff_state.itrace) {
