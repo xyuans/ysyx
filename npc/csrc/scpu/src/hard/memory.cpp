@@ -39,14 +39,39 @@ uint64_t mem_init(char* filename) {
   return size;
 }
 
-uint32_t pmem_read(uint32_t addr) {
+extern "C" uint32_t pmem_read(uint32_t addr) {
   uint32_t index = addr - 0x80000000;
   if (index < 0 || index > MEM_MAX) {
-    printf("pc: %08x, beyond MEM_MAX.\n", addr);
-    return 1;
+    printf("pmem_read, pc: %08x, beyond MEM_MAX\n", addr);
+    exit(-1);
   }
   return *(uint32_t *)(mem+index);
 }
+
+
+extern "C" void pmem_write(uint32_t waddr, uint32_t wdata, int len) {
+  uint32_t index = addr - 0x80000000;
+  if (index < 0 || index > MEM_MAX) {
+    printf("pmem_write, pc: %08x, beyond MEM_MAX\n", wdddr);
+    exit(1);
+  }
+  uint32_t *p_wdata = &wdata;
+  switch (len) {
+    case 1:
+      *(uint8_t *) (mem+waddr) = *(uint8_t *) (p_wdata);
+      break;
+    case 2:
+      *(uint16_t *)(mem+waddr) = *(uint16_t *)(p_wdata);
+      break;
+    case 4:
+      *(uint32_t *)(mem+waddr) = *(uint32_t *)(p_wdata);
+      break;
+    default:
+      printf("pmem_write,len is error\n");
+      exit(1);
+  }
+}
+
 
 uint8_t *guest_to_host(uint32_t addr) {
   uint32_t index = addr - 0x80000000;

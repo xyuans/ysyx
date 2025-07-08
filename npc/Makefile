@@ -10,7 +10,7 @@ VSRC=$(abspath $(shell find vsrc/$(BLOCK)/ -name "*.v"))
 TRACE ?= --trace-fst
 TOP   ?= top
 
-CXXFLAGS += $(addprefix -I, $(INC_PATH)) -g
+CXXFLAGS += $(addprefix -I, $(INC_PATH)) 
 LDFLAGS  += -L${NPC_HOME}/build/
 LDLIBS   += -lreadline -ldisasm -ldl
 .PHONY: sim
