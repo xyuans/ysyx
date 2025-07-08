@@ -39,22 +39,29 @@ uint64_t mem_init(char* filename) {
   return size;
 }
 
-extern "C" uint32_t pmem_read(uint32_t addr) {
+
+uint32_t access_addr;
+extern "C" uint32_t pmem_read(uint32_t addr, bool mtrace_on) {
   uint32_t index = addr - 0x80000000;
   if (index < 0 || index > MEM_MAX) {
     printf("pmem_read, pc: %08x, beyond MEM_MAX\n", addr);
     exit(-1);
   }
+  
+  access_addr = addr;  // 记录内存访问地址，以提供mtrace
   return *(uint32_t *)(mem+index);
 }
 
-
+// 总是往地址为`waddr & ~0x3u`的4字节按写掩码`wmask`写入`wdata`
+// `wmask`中每比特表示`wdata`中1个字节的掩码,
+// 如`wmask = 0x3`代表只写入最低2个字节, 内存中的其它字节保持不变
 extern "C" void pmem_write(uint32_t waddr, uint32_t wdata, int len) {
   uint32_t index = addr - 0x80000000;
   if (index < 0 || index > MEM_MAX) {
     printf("pmem_write, pc: %08x, beyond MEM_MAX\n", wdddr);
     exit(1);
   }
+
   uint32_t *p_wdata = &wdata;
   switch (len) {
     case 1:
@@ -70,6 +77,8 @@ extern "C" void pmem_write(uint32_t waddr, uint32_t wdata, int len) {
       printf("pmem_write,len is error\n");
       exit(1);
   }
+
+  access_addr = waddr;  // 记录内存访问地址，以供mtrace使用
 }
 
 

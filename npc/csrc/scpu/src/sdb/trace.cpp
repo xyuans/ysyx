@@ -159,8 +159,7 @@ void ftrace_init(char *filename) {
   return;
 }
 
-int ftrace(char *pbuf) {
-  char *buf_start = pbuf;
+static char *ftrace(char *pbuf) {
   if (symlist.exist == false) return 0;
   // 函数调用栈
   typedef struct Fun_Stat {
@@ -199,9 +198,20 @@ int ftrace(char *pbuf) {
       }
     }
   }
-  return (int)(pbuf - buf_start);
+  return pbuf;
 }
 
+extern access_addr;
+static void mtrace (char *pbuf) {
+  uint32_t op = cur_inst & 0b1111111;
+  if (op == 0b0000011) {
+    pbuf += sprintf(pbuf, "m:read at addr:0x%08x\n", access_addr);
+  }
+  if(op == 0b0100011) {
+    pbuf += sprintf(pbuf, "m:write at addr:0x%08x\n", access_addr);
+  }
+  return pbuf;
+}
 
 void trace_init(char *elf) {
   if (elf == NULL) {
@@ -237,9 +247,12 @@ void trace() {
   char *p = logbuf;
   // 基本追踪信息
   p += sprintf(p, "\npc:0x%08x  inst:0x%08x  steps:%ld\n", cur_pc, cur_inst, steps); 
-  // 反汇编，将结果写入logbuf
-  if (trace_diff_state.ftrace) {
-    p += ftrace(p);
+  // ftrace和mtrace不会同时发生，会快一丢丢。
+  if (trace_diff_state.mtrace) {
+    p = mtrace(p);
+  }
+  else if (trace_diff_state.ftrace) {
+    p = ftrace(p);
   }
   if (trace_diff_state.itrace) {
     p += sprintf(p, "i: ");
