@@ -86,6 +86,7 @@ module top (
   assign imm_plus_pc = imm + pc;
   
   DataMem datamem(
+    .clk(clk)
     .we(mem_write),
     .ctr(mem_op),
     .addr(alu_result),
@@ -101,7 +102,7 @@ module top (
       3'b010: wd = imm;
       3'b011: wd = imm_plus_pc;
       3'b1??: wd = mem_rd;
-      default: wd = 3'bx;
+      default: wd = 32'bx;
     endcase
   end
 
