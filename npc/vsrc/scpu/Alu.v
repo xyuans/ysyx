@@ -16,8 +16,8 @@ module Alu (
 );
   
   wire [31:0] sum;
-  wire [31:0] carry;
-  wire [31:0] s_overflow;  // less信号所用
+  wire carry;
+  wire s_overflow;  // less信号所用
 
   reg [31:0] shift;
   
@@ -25,7 +25,7 @@ module Alu (
   // carry可zuo无符号减法溢出判断.未溢出说明a-b够减，即a>b。
   // carry为0,溢出，说明a>b。
   // carry为1,未溢出，说明a<b
-	assign {carry, sum} = a + ({(32){is_sub}} ^ b) + is_sub;  // 减法时b取反再加1
+	assign {carry, sum} = a + ({32{is_sub}} ^ b) + is_sub;  // 减法时b取反再加1
   
   // 有符号减法溢出判断
   // 1.a与结果符号相反 2.减法时ab符号相反

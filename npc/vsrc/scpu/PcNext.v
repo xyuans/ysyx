@@ -1,5 +1,5 @@
 module PcNext(
-  input branch [2:0],
+  input [2:0] branch,
   input zero,
   input less,
   output reg [1:0] pc_src

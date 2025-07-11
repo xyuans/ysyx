@@ -13,7 +13,7 @@ module Control(
   output [2:0] branch
   
 );
-  reg [19:0] all_out;
+  reg [18:0] all_out;
   assign {reg_write, imm_src, alu_src, alu_ctr, mem_write, mem_op, wd_src, branch} = all_out;
   always @(*) begin 
     casez({funct7, funct3, op})
