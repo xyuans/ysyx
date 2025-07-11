@@ -16,13 +16,13 @@ module DataMem (
   end
   always @(posedge clk) begin
     case (ctr)
-      3'000: begin 
+      3'b000: begin 
         rd <= {{24{read_data[7] }}, read_data[7:0] }; 
         if (we) begin
           pmem_write(addr, wd, 1);
         end
       end
-      3'001: begin 
+      3'b001: begin 
         rd <= {{16{read_data[15]}}, read_data[15:0]};
         if (we) begin
           pmem_write(addr, wd, 2);
