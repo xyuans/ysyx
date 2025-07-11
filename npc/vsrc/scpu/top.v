@@ -14,7 +14,7 @@ module top (
   wire [3:0] alu_ctr;
   
   // regfile用到的线
-  wire [31:0] rd1, rd2
+  wire [31:0] rd1, rd2;
   reg [31:0] wd;
 
   // ImmExt所用的线
@@ -26,7 +26,7 @@ module top (
   wire less, zero;
 
   // pc相关
-  wire [31:0] pc_plus_4, imm_plus_pc, pc_result
+  wire [31:0] pc_plus_4, imm_plus_pc, pc_result;
   wire pc_src;
 
   // DataMem
