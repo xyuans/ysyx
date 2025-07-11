@@ -1,5 +1,5 @@
-import "DPI-C" function int pmem_read(input int raddr);
-import "DPI-C" function void pmem_write(input unsigned waddr, input unsigned wdata, input int len);
+import "DPI-C" function int pmem_read(input int unsigned raddr);
+import "DPI-C" function void pmem_write(input int unsigned waddr, input int unsigned wdata, input int len);
 
 module DataMem (
   input we,
