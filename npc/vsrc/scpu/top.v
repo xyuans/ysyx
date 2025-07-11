@@ -7,20 +7,44 @@ module top (
   input [31:0] inst,
   output reg [31:0] pc
 );
-  wire [31:0] rd1, rd2, wd;
-  wire [31:0] pc_plus_4, alu_result,  imm_plus_pc, alu_src2, imm;
+  
+  //control unit用到的线
+  wire reg_write, alu_src, mem_write;
+  wire [2:0] imm_src, mem_op, wd_src, branch;
+  wire [3:0] alu_ctr;
+  
+  // regfile用到的线
+  wire [31:0] rd1, rd2;
+  reg [31:0] wd;
+
+  // ImmExt所用的线
+  wire [31:0] imm;  // 作为输出的立即数
+
+  // ALU用到的线
+  reg [31:0] alu_result;
+  wire [31:0] alu_src2;
+  wire less, zero;
+
+  // pc相关
+  wire [31:0] pc_plus_4, imm_plus_pc;
   reg [31:0] pc_result;
-  // 解码用的线,控制
-  wire reg_write, alu_src;
-  wire [1:0] imm_src, wd_src, pc_src;
+  wire [1:0] pc_src;
+
+  // DataMem
+  wire [31:0] mem_rd;
   
   Control control (
-    .op(inst[6:0]),
+    .op(inst[6:2]),
+    .funct3(inst[14:12]),
+    .funct7(inst[30]),
     .reg_write(reg_write),
     .imm_src(imm_src),
     .alu_src(alu_src),
+    .alu_ctr(alu_ctr),
+    .mem_write(mem_write),
+    .mem_op(mem_op),
     .wd_src(wd_src),
-    .pc_src(pc_src)
+    .branch(branch)
   );
 
   RegFile #(.ADDR_WIDTH(5), .DATA_WIDTH(32)) rf (
@@ -48,35 +72,56 @@ module top (
     .y(alu_src2)
   );
 
-  Alu #(32) alu (
+  Alu alu (
     .a(rd1),
     .b(alu_src2),
-    .y(alu_result)
+    .ctr(alu_ctr),
+    .y(alu_result),
+    .zero(zero),
+    .less(less)
   );
 
 
   assign pc_plus_4 = 32'b100 + pc;
   assign imm_plus_pc = imm + pc;
   
-  // 对wd_src的四选一
-  Mux41 mux41 (
-    .a1(alu_result),   // add, addi
-    .a2(pc_plus_4),          // lui
-    .a3(imm),  // auipc
-    .a4(imm+pc),    // jal, jalr
-    .s(wd_src),
-    .y(wd)
+  DataMem datamem(
+    .we(mem_write),
+    .ctr(mem_op),
+    .addr(alu_result),
+    .wd(rd2),
+    .rd(mem_rd)
   );
-  
+
+  // 对wd_src的四选一
+  always @(*) begin
+    casez(wd_src)
+      3'b000: wd = alu_result;
+      3'b001: wd = pc_plus_4;
+      3'b010: wd = imm;
+      3'b011: wd = imm_plus_pc;
+      3'b1??: wd = mem_rd;
+      default: wd = 32'bx;
+    endcase
+  end
+
+  PcNext pcnext(
+    .branch(branch),
+    .zero(zero),
+    .less(less),
+    .pc_src(pc_src)
+  );
+
   // 对pc_src的三选一
   always @(*) begin
     case(pc_src)
       2'b00: pc_result = pc_plus_4;
       2'b01: pc_result = imm_plus_pc;   // jal
       2'b10: pc_result = alu_result;    // jalr,此时alu_result=rd1 + imm
-      default: pc_result = pc_plus_4;
+      default: pc_result = 32'bx;
     endcase
   end
+
 
   always @(posedge clk) begin
     if (rst) pc <= 32'h80000000;

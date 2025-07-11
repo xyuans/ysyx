@@ -44,8 +44,7 @@ uint32_t access_addr;
 extern "C" uint32_t pmem_read(uint32_t addr) {
   uint32_t index = addr - 0x80000000;
   if (index < 0 || index > MEM_MAX) {
-    printf("pmem_read, pc: %08x, beyond MEM_MAX\n", addr);
-    exit(-1);
+    return 0;
   }
   
   access_addr = addr;  // 记录内存访问地址，以提供mtrace
@@ -58,20 +57,20 @@ extern "C" uint32_t pmem_read(uint32_t addr) {
 extern "C" void pmem_write(uint32_t waddr, uint32_t wdata, int len) {
   uint32_t index = waddr - 0x80000000;
   if (index < 0 || index > MEM_MAX) {
-    printf("pmem_write, pc: %08x, beyond MEM_MAX\n", waddr);
+    printf("pmem_write, waddr: %08x, may beyond MEM_MAX\n", waddr);
     exit(1);
   }
 
   uint32_t *p_wdata = &wdata;
   switch (len) {
     case 1:
-      *(uint8_t *) (mem+waddr) = *(uint8_t *) (p_wdata);
+      *(uint8_t *) (mem+index) = *(uint8_t *) (p_wdata);
       break;
     case 2:
-      *(uint16_t *)(mem+waddr) = *(uint16_t *)(p_wdata);
+      *(uint16_t *)(mem+index) = *(uint16_t *)(p_wdata);
       break;
     case 4:
-      *(uint32_t *)(mem+waddr) = *(uint32_t *)(p_wdata);
+      *(uint32_t *)(mem+index) = *(uint32_t *)(p_wdata);
       break;
     default:
       printf("pmem_write,len is error\n");
