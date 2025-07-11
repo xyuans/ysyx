@@ -52,8 +52,8 @@ module Alu (
     case (ctr[2:0])
       3'b000: y = sum;            // add,sub
       3'b001: y = shift;          // sll
-      3'b010: y = {32'b0, {less}};     // slt
-      3'b011: y = {32'b0, {less}};          // sltu
+      3'b010: y = {31'b0, {less}};     // slt
+      3'b011: y = {31'b0, {less}};          // sltu
       3'b100: y = a ^ b;
       3'b101: y = shift;  // srl, sra
       3'b110: y = a | b;
