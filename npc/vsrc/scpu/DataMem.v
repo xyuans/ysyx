@@ -11,6 +11,9 @@ module DataMem (
 );
   // mem_op: 000-1byte,sign  001-2bs  010-4b  100-1bu  101-2bu
   reg [31:0] read_data;
+  always @(*) begin
+    read_data = pmem_read(addr);
+  end
   always @(posedge clk) begin
     read_data = pmem_read(addr);
     case (ctr)
