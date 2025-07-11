@@ -101,7 +101,7 @@ module top (
       3'b010: wd = imm;
       3'b011: wd = imm_plus_pc;
       3'b1??: wd = mem_rd;
-      default: 
+      default: wd = 3'bx;
     endcase
   end
 
