@@ -7,20 +7,38 @@ module top (
   input [31:0] inst,
   output reg [31:0] pc
 );
+  
+  //control unit用到的线
+  wire reg_write, alu_src, mem_write;
+  wire [2:0] imm_src, mem_op, wd_src, branch;
+  wire [3:0] alu_ctr;
+  
+  // regfile用到的线
   wire [31:0] rd1, rd2, wd;
-  wire [31:0] pc_plus_4, alu_result,  imm_plus_pc, alu_src2, imm;
-  reg [31:0] pc_result;
-  // 解码用的线,控制
-  wire reg_write, alu_src;
-  wire [1:0] imm_src, wd_src, pc_src;
+
+  // ImmExt所用的线
+  wire [31:0] imm;  // 作为输出的立即数
+
+  // ALU用到的线
+  wire [31:0] alu_result, alu_src2;
+  wire less, zero
+
+  // pc相关
+  wire [31:0] pc_plus_4, imm_plus_pc, pc_result;
+
   
   Control control (
     .op(inst[6:0]),
+    .funct3(inst[14:12]),
+    .funct7(inst[30]),
     .reg_write(reg_write),
     .imm_src(imm_src),
     .alu_src(alu_src),
+    .alu_ctr(alu_ctr),
+    .mem_write(mem_write),
+    .mem_op(mem_op),
     .wd_src(wd_src),
-    .pc_src(pc_src)
+    .branch(branch)
   );
 
   RegFile #(.ADDR_WIDTH(5), .DATA_WIDTH(32)) rf (
@@ -51,7 +69,10 @@ module top (
   Alu #(32) alu (
     .a(rd1),
     .b(alu_src2),
-    .y(alu_result)
+    .ctr(alu_ctr),
+    .y(alu_result),
+    .zero(zero),
+    .less(less)
   );
 
 
@@ -68,15 +89,23 @@ module top (
     .y(wd)
   );
   
+  PcNext pcnext(
+    .branch(branch),
+    .zero(zero),
+    .less(less),
+    .pc_src(pc_src)
+  );
+
   // 对pc_src的三选一
   always @(*) begin
     case(pc_src)
       2'b00: pc_result = pc_plus_4;
       2'b01: pc_result = imm_plus_pc;   // jal
       2'b10: pc_result = alu_result;    // jalr,此时alu_result=rd1 + imm
-      default: pc_result = pc_plus_4;
+      default: pc_result = 2'bx;
     endcase
   end
+
 
   always @(posedge clk) begin
     if (rst) pc <= 32'h80000000;
