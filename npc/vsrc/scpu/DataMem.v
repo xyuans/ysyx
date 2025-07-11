@@ -13,35 +13,33 @@ module DataMem (
   reg [31:0] read_data;
   always @(*) begin
     read_data = pmem_read(addr);
-  end
-  always @(posedge clk) begin
     case (ctr)
       3'b000: begin 
-        rd <= {{24{read_data[7] }}, read_data[7:0] }; 
+        rd = {{24{read_data[7] }}, read_data[7:0] }; 
         if (we) begin
           pmem_write(addr, wd, 1);
         end
       end
       3'b001: begin 
-        rd <= {{16{read_data[15]}}, read_data[15:0]};
+        rd = {{16{read_data[15]}}, read_data[15:0]};
         if (we) begin
           pmem_write(addr, wd, 2);
         end
       end
       3'b010: begin
-        rd <= read_data;
+        rd = read_data;
         if (we) begin
           pmem_write(addr, wd, 4);
         end
       end
       3'b100: begin
-        rd <= {24'b0, read_data[7:0]};
+        rd = {24'b0, read_data[7:0]};
         if (we) begin
           pmem_write(addr, wd, 1);
         end
       end
       3'b101: begin
-        rd <= {16'b0, read_data[15:0]};
+        rd = {16'b0, read_data[15:0]};
         if (we) begin
           pmem_write(addr, wd, 2);
         end
