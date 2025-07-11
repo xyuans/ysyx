@@ -26,8 +26,9 @@ module top (
   wire less, zero;
 
   // pc相关
-  wire [31:0] pc_plus_4, imm_plus_pc, pc_result;
-  wire pc_src;
+  wire [31:0] pc_plus_4, imm_plus_pc;
+  reg [31:0] pc_result;
+  wire [2:0] pc_src;
 
   // DataMem
   wire [31:0] mem_rd;
