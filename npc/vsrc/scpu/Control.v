@@ -66,7 +66,7 @@ module Control(
       9'b0_100_01100: all_out = 19'b1_xxx_0_x100_0_xxx_000_000;  // xor,   r
       9'b0_101_01100: all_out = 19'b1_xxx_0_0101_0_xxx_000_000;  // srl,   r
       9'b1_101_01100: all_out = 19'b1_xxx_0_1101_0_xxx_000_000;  // sra,   r
-      9'b0_110_01100: all_out = 19'b1_xxx_0_x100_0_xxx_000_000;  // or,    r
+      9'b0_110_01100: all_out = 19'b1_xxx_0_x110_0_xxx_000_000;  // or,    r
       9'b0_111_01100: all_out = 19'b1_xxx_0_x111_0_xxx_000_000;  // and,   r
 
       default: all_out = 19'b0;

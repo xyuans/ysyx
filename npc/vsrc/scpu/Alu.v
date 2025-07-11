@@ -7,8 +7,8 @@
 // ctr[3]-sub/add or arith/logical  ctr[0]-unsign/sign
 // ctr[2:0] 000-sum 
 module Alu (
-  input [31:0] a,
-  input [31:0] b,
+  input signed [31:0] a,
+  input signed [31:0] b,
   input [3:0] ctr,
   output reg [31:0] y,
   output zero,  // 比较是否相等所用
