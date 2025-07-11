@@ -1,4 +1,4 @@
-
+/* verilator lint_off WIDTHEXPAND */
 /*
 * 0_001-sll  0_101-srl  1_101-srr
 * 移位器需要对这几种情况选择

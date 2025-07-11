@@ -69,7 +69,7 @@ module Control(
       9'b0_110_01100: all_out = 19'b1_xxx_0_x100_0_xxx_000_000;  // or,    r
       9'b0_111_01100: all_out = 19'b1_xxx_0_x111_0_xxx_000_000;  // and,   r
 
-      default: all_out = 8'b0_xx_x_xx_xx;
+      default: all_out = 19'b0;
     endcase
   end
 

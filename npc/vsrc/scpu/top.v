@@ -20,15 +20,18 @@ module top (
   wire [31:0] imm;  // 作为输出的立即数
 
   // ALU用到的线
-  wire [31:0] alu_result, alu_src2;
+  reg [31:0] alu_result;
+  wire [31:0] alu_src2;
   wire less, zero;
 
   // pc相关
   wire [31:0] pc_plus_4, imm_plus_pc, pc_result, pc_src;
 
+  // DataMem
+  wire [31:0] mem_rd;
   
   Control control (
-    .op(inst[6:0]),
+    .op(inst[6:2]),
     .funct3(inst[14:12]),
     .funct7(inst[30]),
     .reg_write(reg_write),
@@ -79,16 +82,24 @@ module top (
   assign pc_plus_4 = 32'b100 + pc;
   assign imm_plus_pc = imm + pc;
   
-  // 对wd_src的四选一
-  Mux41 mux41 (
-    .a1(alu_result),   // add, addi
-    .a2(pc_plus_4),          // lui
-    .a3(imm),  // auipc
-    .a4(imm+pc),    // jal, jalr
-    .s(wd_src),
-    .y(wd)
+  DataMem datamem(
+    .we(mem_write),
+    .ctr(mem_op),
+    .addr(alu_result),
+    .wd(rd2),
+    .rd(mem_rd)
   );
-  
+
+  // 对wd_src的四选一
+  always @(*) begin
+    casez(wd_src)
+      3'b000: wd = alu_result;
+      3'b001: wd = pc_plus_4;
+      3'b010: wd = imm;
+      3'b1??: wd = mem_rd;
+    endcase
+  end
+
   PcNext pcnext(
     .branch(branch),
     .zero(zero),
@@ -102,7 +113,7 @@ module top (
       2'b00: pc_result = pc_plus_4;
       2'b01: pc_result = imm_plus_pc;   // jal
       2'b10: pc_result = alu_result;    // jalr,此时alu_result=rd1 + imm
-      default: pc_result = 2'bx;
+      default: pc_result = 32'bx;
     endcase
   end
 
