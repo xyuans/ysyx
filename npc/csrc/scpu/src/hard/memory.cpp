@@ -44,13 +44,11 @@ uint32_t access_addr;
 extern "C" uint32_t pmem_read(uint32_t addr) {
   
   uint32_t index = addr - 0x80000000;
-  printf("0x%x", addr);
   if (index < 0 || index > MEM_MAX) {
     return 0;
   }
   
   access_addr = addr;  // 记录内存访问地址，以提供mtrace
-  printf("value:0x%x\n", *(uint32_t *)(mem+index));
   return *(uint32_t *)(mem+index);
 }
 
