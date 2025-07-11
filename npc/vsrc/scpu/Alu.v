@@ -17,9 +17,9 @@ module Alu (
   
   wire [31:0] sum;
   wire [31:0] carry;
-  wire [31:0] overflow;  // less信号所用
+  wire [31:0] s_overflow;  // less信号所用
 
-  wire [31:0] shift;
+  reg [31:0] shift;
   
   wire is_sub = ctr[3];  // 内部解码
   // carry可zuo无符号减法溢出判断.未溢出说明a-b够减，即a>b。
@@ -29,13 +29,13 @@ module Alu (
   
   // 有符号减法溢出判断
   // 1.a与结果符号相反 2.减法时ab符号相反
-  assign i_overflow = (a[3]^sum[3]) & (a[3]^b[3]);
+  assign s_overflow = (a[3]^sum[3]) & (a[3]^b[3]);
   
 
   /*无论是有符号还是无符号，做减法运算，等于零时一定不会溢出，所以zero无需考虑是否溢出*/
   // ctr[0]=1代表无符号数
   assign zero = ~(|sum);
-  assign less = ctr[0] ? carry : (i_overflow ^ sum[31]);
+  assign less = ctr[0] ? carry : (s_overflow ^ sum[31]);
   
   
   

@@ -24,7 +24,7 @@ module top (
   wire less, zero;
 
   // pc相关
-  wire [31:0] pc_plus_4, imm_plus_pc, pc_result;
+  wire [31:0] pc_plus_4, imm_plus_pc, pc_result, pc_src;
 
   
   Control control (
@@ -66,7 +66,7 @@ module top (
     .y(alu_src2)
   );
 
-  Alu #(32) alu (
+  Alu alu (
     .a(rd1),
     .b(alu_src2),
     .ctr(alu_ctr),
