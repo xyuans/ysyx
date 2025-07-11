@@ -46,6 +46,7 @@ module DataMem (
           pmem_write(addr, wd, 2);
         end
       end
+      default: rd <= 32'bx;
     endcase
   
   end

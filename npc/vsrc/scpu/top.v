@@ -28,7 +28,7 @@ module top (
   // pc相关
   wire [31:0] pc_plus_4, imm_plus_pc;
   reg [31:0] pc_result;
-  wire [2:0] pc_src;
+  wire [1:0] pc_src;
 
   // DataMem
   wire [31:0] mem_rd;
@@ -99,7 +99,9 @@ module top (
       3'b000: wd = alu_result;
       3'b001: wd = pc_plus_4;
       3'b010: wd = imm;
+      3'b011: wd = imm_plus_pc;
       3'b1??: wd = mem_rd;
+      default: 
     endcase
   end
 

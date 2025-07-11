@@ -19,6 +19,7 @@ module PcNext(
       5'b110_?_1: pc_src = 2'b01;  // blt, <
       5'b111_?_0: pc_src = 2'b01;  // bge, >=
       5'b111_?_1: pc_src = 2'b00;  // bge, >=
+      default: pc_src = 2'bx;
     endcase
   end
 endmodule
