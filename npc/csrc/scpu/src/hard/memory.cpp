@@ -44,7 +44,6 @@ uint32_t access_addr;
 extern "C" uint32_t pmem_read(uint32_t addr) {
   uint32_t index = addr - 0x80000000;
   if (index < 0 || index > MEM_MAX) {
-    printf("pmem_read, addr: %08x, may beyond MEM_MAX\n", addr);
     return 0;
   }
   
