@@ -34,7 +34,7 @@ module Control(
       9'b?_???_01101: all_out = 19'b1_011_x_xxxx_0_xxx_010_000;  // lui,   u
       9'b?_???_00101: all_out = 19'b1_011_x_xxxx_0_xxx_011_000;  // auipc, u
       9'b?_???_11011: all_out = 19'b1_100_x_xxxx_0_xxx_001_001;  // jal,   j
-      9'b?_000_11001: all_out = 19'b1_000_1_0000_0_xxx_000_010;  // jalr,  i
+      9'b?_000_11001: all_out = 19'b1_000_1_0000_0_xxx_001_010;  // jalr,  i
       9'b?_000_11000: all_out = 19'b0_010_0_1000_0_xxx_xxx_100;  // beq,   b
       9'b?_001_11000: all_out = 19'b0_010_0_1xx0_0_xxx_xxx_101;  // bnq,   b
       9'b?_100_11000: all_out = 19'b0_010_0_1xx0_0_xxx_xxx_110;  // blt,   b
