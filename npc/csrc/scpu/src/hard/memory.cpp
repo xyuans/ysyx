@@ -50,7 +50,7 @@ extern "C" uint32_t pmem_read(uint32_t addr) {
   }
   
   access_addr = addr;  // 记录内存访问地址，以提供mtrace
-  pritf("value:0x%x\n", *(uint32_t *)(mem+index));
+  printf("value:0x%x\n", *(uint32_t *)(mem+index));
   return *(uint32_t *)(mem+index);
 }
 
