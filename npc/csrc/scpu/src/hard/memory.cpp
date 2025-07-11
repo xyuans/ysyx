@@ -42,6 +42,7 @@ uint64_t mem_init(char* filename) {
 
 uint32_t access_addr;
 extern "C" uint32_t pmem_read(uint32_t addr) {
+  printf("0x%x\n", addr);
   uint32_t index = addr - 0x80000000;
   if (index < 0 || index > MEM_MAX) {
     return 0;
