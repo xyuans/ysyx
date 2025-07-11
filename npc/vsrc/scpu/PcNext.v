@@ -4,6 +4,7 @@ module PcNext(
   input less,
   output reg [1:0] pc_src
 );
+  wire [4:0] input_all;
   input_all = {branch, zero, less};
   always @(*) begin
     casez (input_all)
