@@ -21,7 +21,7 @@ module top (
 
   // ALU用到的线
   wire [31:0] alu_result, alu_src2;
-  wire less, zero
+  wire less, zero;
 
   // pc相关
   wire [31:0] pc_plus_4, imm_plus_pc, pc_result;

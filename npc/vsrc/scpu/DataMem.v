@@ -38,6 +38,7 @@ module DataMem (
         if (we) begin
           pmem_write(addr, wd, 1);
         end
+      end
       3'b101: begin
         rd <= {16'b0, read_data[15:0]};
         if (we) begin
