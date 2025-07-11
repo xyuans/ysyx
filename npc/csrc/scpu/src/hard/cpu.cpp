@@ -70,7 +70,7 @@ void reset(int n) {
   top->rst = 1;
   while (n-- > 0) step_and_dump_wave();
   top->rst = 0; 
-  printf("pc is:0x%x", top->pc);
+  printf("after reset, pc is:0x%x\n", top->pc);
   //step_and_dump_wave(); // 逻辑上不应该有这行代码，因为会导致在exe_once()外多执行一步
 }
 

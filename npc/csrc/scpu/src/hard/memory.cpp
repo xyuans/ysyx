@@ -66,13 +66,13 @@ extern "C" void pmem_write(uint32_t waddr, uint32_t wdata, int len) {
   uint32_t *p_wdata = &wdata;
   switch (len) {
     case 1:
-      *(uint8_t *) (mem+waddr) = *(uint8_t *) (p_wdata);
+      *(uint8_t *) (mem+index) = *(uint8_t *) (p_wdata);
       break;
     case 2:
-      *(uint16_t *)(mem+waddr) = *(uint16_t *)(p_wdata);
+      *(uint16_t *)(mem+index) = *(uint16_t *)(p_wdata);
       break;
     case 4:
-      *(uint32_t *)(mem+waddr) = *(uint32_t *)(p_wdata);
+      *(uint32_t *)(mem+index) = *(uint32_t *)(p_wdata);
       break;
     default:
       printf("pmem_write,len is error\n");
