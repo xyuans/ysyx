@@ -11,10 +11,8 @@ module DataMem (
 );
   // mem_op: 000-1byte,sign  001-2bs  010-4b  100-1bu  101-2bu
   reg [31:0] read_data;
-  always @(*) begin
-
-  end
-  always @(posedge clk) begin    
+  always @(posedge clk) begin
+    read_data <= pmem_read(addr);
     case (ctr)
       3'b000: begin 
         rd <= {{24{read_data[7] }}, read_data[7:0] }; 
