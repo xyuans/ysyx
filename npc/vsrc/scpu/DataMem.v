@@ -3,7 +3,6 @@ import "DPI-C" function void pmem_write(input int unsigned waddr, input int unsi
 
 module DataMem (
   input we,
-  input clk,
   input [2:0] ctr,
   input [31:0] addr,
   input [31:0] wd,
