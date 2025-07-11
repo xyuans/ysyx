@@ -15,7 +15,6 @@ module DataMem (
     read_data = pmem_read(addr);
   end
   always @(posedge clk) begin
-    read_data = pmem_read(addr);
     case (ctr)
       3'b000: begin 
         rd <= {{24{read_data[7] }}, read_data[7:0] }; 
