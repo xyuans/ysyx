@@ -4,7 +4,7 @@
 * 移位器需要对这几种情况选择
 * 
  */
-// ctr[3]-sub/add or logicl/arith  ctr[0]-sign/unsign
+// ctr[3]-sub/add or arith/logical  ctr[0]-unsign/sign
 // ctr[2:0] 000-sum 
 module Alu (
   input [31:0] a,
@@ -35,7 +35,7 @@ module Alu (
   /*无论是有符号还是无符号，做减法运算，等于零时一定不会溢出，所以zero无需考虑是否溢出*/
   // ctr[0]=1代表无符号数
   assign zero = ~(|sum);
-  assign less = ctr[0] ? carry : (s_overflow ^ sum[31]);
+  assign less = ctr[0] ? ~carry : (s_overflow ^ sum[31]);
   
   
   
