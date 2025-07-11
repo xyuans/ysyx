@@ -42,7 +42,7 @@ module Alu (
   always @(*) begin
     case(ctr[3:2])
       2'b00: shift = a << b[4:0];
-      2'b01: shitf = a >> b[4:0];
+      2'b01: shift = a >> b[4:0];
       2'b11: shift = a >>> b[4:0];
       default: shift = 32'bx;
     endcase
