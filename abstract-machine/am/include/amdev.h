@@ -6,7 +6,14 @@
 #define AM_DEVREG(id, reg, perm, ...) \
   enum { AM_##reg = (id) }; \
   typedef struct { __VA_ARGS__; } AM_##reg##_T;
+/*
+  AM_DEVREG( 6, TIMER_UPTIME, RD, uint64_t us);宏展开后：
 
+  enum { AM_TIMER_UPTIME = 6 };  // 创建枚举常量
+  typedef struct {                // 定义寄存器结构体类型
+    uint64_t us;
+} AM_TIMER_UPTIME_T;
+ * */
 AM_DEVREG( 1, UART_CONFIG,  RD, bool present);
 AM_DEVREG( 2, UART_TX,      WR, char data);
 AM_DEVREG( 3, UART_RX,      RD, char data);

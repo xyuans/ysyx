@@ -86,6 +86,7 @@ module top (
   assign imm_plus_pc = imm + pc;
   
   DataMem datamem(
+    .clk(clk),
     .we(mem_write),
     .ctr(mem_op),
     .addr(alu_result),

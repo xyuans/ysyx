@@ -19,9 +19,11 @@ sim:
 	verilator $(TRACE) -Wall  --cc $(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS) $(LDLIBS)) \
 		                 --build --exe --top $(TOP) --Mdir ./build/$(BLOCK) $(CSRC) $(VSRC)
 
+DIFF = -d build/riscv32-nemu-interpreter-so
+TRACE = -t $(IMG).elf
 run:
 	echo V$(TOP) $(IMG)
-	./build/$(BLOCK)/V$(TOP) $(IMG)
+	./build/$(BLOCK)/V$(TOP) $(IMG).bin    $(TRACE) $(DIFF) 
 
 .PHONY: clean
 clean:

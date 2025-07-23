@@ -50,8 +50,9 @@ void step_and_dump_wave()
 { 
   top->clk = 0;top->eval();contextp->timeInc(1);  // 即使不写波形，仍需调用contextp->timeInc(1)
   if (trace_diff_state.wtrace == true) tfp->dump(contextp->time());
-
+  //if (steps > 50) printf("clk is 0\n");
   top->clk = 1;top->eval();contextp->timeInc(1);
+  //if (steps > 50) printf("clk is 1\n");
   if (trace_diff_state.wtrace == true) tfp->dump(contextp->time());
 }
 
