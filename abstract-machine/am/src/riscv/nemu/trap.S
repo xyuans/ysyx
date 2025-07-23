@@ -42,15 +42,15 @@ f(30) f(31)
 __am_asm_trap:
   addi sp, sp, -CONTEXT_SIZE
 
-  MAP(REGS, PUSH)   # 宏指令：保存所有通用寄存器到栈
+  MAP(REGS, PUSH)
 
   csrr t0, mcause
   csrr t1, mstatus
   csrr t2, mepc
 
-  STORE t0, OFFSET_CAUSE(sp)    # 保存mcause到栈
-  STORE t1, OFFSET_STATUS(sp)   # 保存mstatus到栈
-  STORE t2, OFFSET_EPC(sp)      # 保存mepc到栈
+  STORE t0, OFFSET_CAUSE(sp)
+  STORE t1, OFFSET_STATUS(sp)
+  STORE t2, OFFSET_EPC(sp)
 
   # set mstatus.MPRV to pass difftest
   li a0, (1 << 17)
@@ -60,13 +60,12 @@ __am_asm_trap:
   mv a0, sp
   call __am_irq_handle
 
-  # 恢复CSR寄存器值
   LOAD t1, OFFSET_STATUS(sp)
   LOAD t2, OFFSET_EPC(sp)
   csrw mstatus, t1
   csrw mepc, t2
 
-  MAP(REGS, POP)   # 宏指令：从栈中恢复所有通用寄存器
+  MAP(REGS, POP)
 
-  addi sp, sp, CONTEXT_SIZE   
-  mret   # 跳转到mepc地址，恢复mstatus配置
+  addi sp, sp, CONTEXT_SIZE
+  mret
