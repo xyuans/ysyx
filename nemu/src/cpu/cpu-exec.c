@@ -29,7 +29,7 @@
 
 extern SymList symlist;  // ftrace.c
 
-CPU_state cpu = {};
+CPU_state cpu = {.mstatus = 0x1800};
 uint64_t g_nr_guest_inst = 0;
 static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
@@ -57,7 +57,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
     //00001_000_00000_1100111   0x08067 为 ret指令
     if ((_this->isa.inst & 0xff07f) == 0x8067) {
       uint32_t location = 0;
-      int index;
+      int index = 0;
       for (int i = fun_stat.p; i >= 0 ; i--) {
         // 返回位置在dnpc地址之前最近的一个函数
         uint32_t addr = symlist.list[fun_stat.stat[i]].addr;
@@ -103,12 +103,12 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   }
 #endif
 }
-
 static void exec_once(Decode *s, vaddr_t pc) {
   s->pc = pc;
   s->snpc = pc;
   isa_exec_once(s);
   cpu.pc = s->dnpc;
+
 #ifdef CONFIG_TRACE
   char *p = s->logbuf;
   p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);
@@ -136,7 +136,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
   // mtrace 
   int cur = (s->iringbuf.cur + 1) % 16;
   s->iringbuf.cur = cur;
-  strncpy(s->iringbuf.buf[cur], s->logbuf, 127);
+  strncpy(s->iringbuf.buf[cur], s->logbuf, sizeof(s->iringbuf.buf[cur]) );
 #endif
 }
 

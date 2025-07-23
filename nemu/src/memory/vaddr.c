@@ -17,13 +17,23 @@
 #include <memory/paddr.h>
 
 word_t vaddr_ifetch(vaddr_t addr, int len) {
+
   return paddr_read(addr, len);
 }
 
 word_t vaddr_read(vaddr_t addr, int len) {
+#ifdef CONFIG_MTRACE
+  if (addr > CONFIG_MBASE) {
+    Log("read in address = " FMT_PADDR ", len = %d\n", addr, len);
+  }
+#endif
   return paddr_read(addr, len);
 }
-
 void vaddr_write(vaddr_t addr, int len, word_t data) {
+#ifdef CONFIG_MTRACE
+  if (addr > CONFIG_MBASE) {
+    Log("write in address = " FMT_PADDR ", len = %d\n", addr, len);
+  }
+#endif
   paddr_write(addr, len, data);
 }

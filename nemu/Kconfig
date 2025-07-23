@@ -160,6 +160,15 @@ config MTRACE
   bool "Enable memory tracer"
   default n
 
+config DTRACE
+  depends on TRACE
+  bool "Enable device tracer"
+  default n
+
+config ETRACE
+  depends on TRACE
+  bool "Enable exception tracer"
+  default n
 
 config DIFFTEST
   depends on TARGET_NATIVE_ELF

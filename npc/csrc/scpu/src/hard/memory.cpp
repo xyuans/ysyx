@@ -5,8 +5,17 @@
 #include <sys/stat.h>
 
 #include "common.h"
+#include "hard/timer.h"
+
+#define DEVICE_BASE 0xa0000000
+
+#define USART_ADDR      (DEVICE_BASE + 0x00003f8)
+#define RTC_ADDR        (DEVICE_BASE + 0x0000048) 
+
 
 static uint8_t mem[MEM_MAX];
+
+
 
 uint64_t mem_init(char* filename) {
   FILE* file = fopen(filename, "rb"); // 以二进制读模式打开文件
@@ -42,8 +51,15 @@ uint64_t mem_init(char* filename) {
 
 uint32_t access_addr;
 extern "C" uint32_t pmem_read(uint32_t addr) {
+  if (addr == RTC_ADDR + 4) {
+    get_time();
+    return high_timer_reg();
+  }
+  if (addr == RTC_ADDR + 0) {
+    return low_timer_reg();
+  }
   uint32_t index = addr - 0x80000000;
-  if (index < 0 || index > MEM_MAX) {
+  if (index > MEM_MAX) {
     return 0;
   }
   
@@ -55,6 +71,11 @@ extern "C" uint32_t pmem_read(uint32_t addr) {
 // `wmask`中每比特表示`wdata`中1个字节的掩码,
 // 如`wmask = 0x3`代表只写入最低2个字节, 内存中的其它字节保持不变
 extern "C" void pmem_write(uint32_t waddr, uint32_t wdata, int len) {
+  if (waddr == USART_ADDR) {
+    // printf("usart happen\n");
+    putchar((uint8_t)wdata);
+    return;
+  }
   uint32_t index = waddr - 0x80000000;
   if (index < 0 || index > MEM_MAX) {
     printf("pmem_write, waddr: %08x, may beyond MEM_MAX\n", waddr);
