@@ -39,6 +39,8 @@ f(30) f(31)
 
 .align 3
 .globl __am_asm_trap
+
+# 向栈写入只是为了向函数传递Context *指针。对与当前进程上下文的保存在handle函数中进行，有一个pcb结构体来专门保存。
 __am_asm_trap:
   addi sp, sp, -CONTEXT_SIZE
 
@@ -59,7 +61,8 @@ __am_asm_trap:
 
   mv a0, sp
   call __am_irq_handle
-  mv sp, a0
+  mv t3, sp  # 在切换前保护当前的sp
+  mv sp, a0  # 把要切换的进程的上下文指针写入sp
 
   # 恢复CSR寄存器值
   LOAD t1, OFFSET_STATUS(sp)
@@ -68,6 +71,6 @@ __am_asm_trap:
   csrw mepc, t2
 
   MAP(REGS, POP)   # 宏指令：从栈中恢复所有通用寄存器
-
+  mv sp, t3
   addi sp, sp, CONTEXT_SIZE   
   mret   # 跳转到mepc地址，恢复mstatus配置
