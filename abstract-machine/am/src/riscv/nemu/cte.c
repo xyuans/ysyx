@@ -44,7 +44,7 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
   Context *cxt = kstack.start;
   cxt->gpr[10] = (uintptr_t)arg;
   cxt->mepc = (uintptr_t)entry;
-  return NULL;
+  return cxt;
 }
 
 void yield() {
