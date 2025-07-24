@@ -7,31 +7,22 @@ static Context* (*user_handler)(Event, Context*) = NULL;
 Context* __am_irq_handle(Context *c) {
   if (user_handler) {
     Event ev = {0};
-    #ifdef __riscv_e
-    int call_id = c->gpr[15];
-    #else
-    int call_id = c->gpr[17];
-    #endif 
-    switch (call_id) {  // c->gpr[17] is a7
-      case -1: 
-        ev.event = EVENT_YIELD; 
-        c->mepc += 4;
-        break;
+    switch (c->mcause) {
       default: ev.event = EVENT_ERROR; break;
     }
+
     c = user_handler(ev, c);
     assert(c != NULL);
   }
+
   return c;
 }
 
 extern void __am_asm_trap(void);
 
-// 传入处理回调函数handler, 设置自陷地址
 bool cte_init(Context*(*handler)(Event, Context*)) {
   // initialize exception entry
-  // 可能优化的原因是编译器认为 csrw mtvec 只是写入硬件寄存器，不影响程序内存状态
-  asm volatile("csrw mtvec, %0" : : "r"(__am_asm_trap));  // 将__am_asm_trap这个汇编定义的标签地址值放入寄存器中
+  asm volatile("csrw mtvec, %0" : : "r"(__am_asm_trap));
 
   // register event handler
   user_handler = handler;
@@ -39,12 +30,8 @@ bool cte_init(Context*(*handler)(Event, Context*)) {
   return true;
 }
 
-// kstack是栈的范围, entry是内核线程的入口, arg则是内核线程的参数
 Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
-  Context *cxt = kstack.start;
-  cxt->gpr[10] = (uintptr_t)arg;
-  cxt->mepc = (uintptr_t)entry;
-  return cxt;
+  return NULL;
 }
 
 void yield() {

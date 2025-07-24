@@ -15,18 +15,12 @@
 
 #include <isa.h>
 
-// NO指定是异常编号
 word_t isa_raise_intr(word_t NO, vaddr_t epc) {
   /* TODO: Trigger an interrupt/exception with ``NO''.
    * Then return the address of the interrupt/exception vector.
    */
-  
- #ifdef CONFIG_ETRACE
-  Log("exception happen, NO is %d \n", (int)NO);
-  #endif
-  cpu.mcause = NO;    // 设置异常编号
-  cpu.mepc = epc;     // 记录返回地址
-  return cpu.mtvec;   // 返回异常入口地址
+
+  return 0;
 }
 
 word_t isa_query_intr() {

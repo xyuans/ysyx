@@ -17,49 +17,26 @@
 #include <cpu/cpu.h>
 #include <difftest-def.h>
 #include <memory/paddr.h>
-#include <cpu/decode.h>
 
-__EXPORT void difftest_memcpy(uint8_t *src, size_t n) {
-  uint8_t* addr = guest_to_host(CONFIG_MBASE);
-  size_t i;
-  for(i = 0; i < n; i++) {
-    addr[i] = src[i];
-  }
-}
-extern CPU_state cpu;
-__EXPORT void difftest_regcpy(CPU_state *dut_r) {
-  for(int i = 0; i < 32; i++) {
-    cpu.gpr[i] = dut_r->gpr[i];
-  }
-  cpu.pc = dut_r->pc;
+__EXPORT void difftest_memcpy(paddr_t addr, void *buf, size_t n, bool direction) {
+  assert(0);
 }
 
-int isa_exec_once(Decode *s);
-
-__EXPORT void difftest_exec() {
-  
-  Decode s;
-  s.pc = cpu.pc;
-  s.snpc = cpu.pc;
-  isa_exec_once(&s);
-  cpu.pc = s.dnpc;
+__EXPORT void difftest_regcpy(void *dut, bool direction) {
+  assert(0);
 }
 
-__EXPORT void difftest_get_ref_r(CPU_state *ref_r) {
-  for(int i = 0; i < 32; i++) {
-    ref_r->gpr[i] = cpu.gpr[i];
-  }
-  ref_r->pc = cpu.pc;
+__EXPORT void difftest_exec(uint64_t n) {
+  assert(0);
 }
 
 __EXPORT void difftest_raise_intr(word_t NO) {
   assert(0);
 }
 
-__EXPORT void difftest_init() {
+__EXPORT void difftest_init(int port) {
   void init_mem();
   init_mem();
   /* Perform ISA dependent initialization. */
   init_isa();
 }
-
