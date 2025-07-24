@@ -71,6 +71,6 @@ __am_asm_trap:
   csrw mepc, t2
 
   MAP(REGS, POP)   # 宏指令：从栈中恢复所有通用寄存器
-  mv sp, t3
+  #mv sp, t3
   addi sp, sp, CONTEXT_SIZE   
   mret   # 跳转到mepc地址，恢复mstatus配置
