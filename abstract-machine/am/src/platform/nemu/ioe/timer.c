@@ -4,6 +4,8 @@
 static uint64_t boot_time;
 
 static uint64_t read_time() { 
+  // volatile 关键字告诉编译器，该内存位置的内容可能被硬件或外部事件改变，因此每次访问都必须严格执行，不能优化
+  // 否则可能因为代码中没有改过这个地址的值而导致编译器会再第二次读取时读取之前加载到寄存器的值。
   uint32_t hi = *(volatile uint32_t *)(RTC_ADDR + 4);
   uint32_t lo = *(volatile uint32_t *)(RTC_ADDR + 0);
   uint64_t time = ((uint64_t)hi << 32) | lo;
