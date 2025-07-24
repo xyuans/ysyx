@@ -27,7 +27,7 @@ Context* __am_irq_handle(Context *c) {
 
 extern void __am_asm_trap(void);
 
-// 传入处理回调函数handler
+// 传入处理回调函数handler, 设置自陷地址
 bool cte_init(Context*(*handler)(Event, Context*)) {
   // initialize exception entry
   // 可能优化的原因是编译器认为 csrw mtvec 只是写入硬件寄存器，不影响程序内存状态
@@ -39,7 +39,11 @@ bool cte_init(Context*(*handler)(Event, Context*)) {
   return true;
 }
 
+// kstack是栈的范围, entry是内核线程的入口, arg则是内核线程的参数
 Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
+  Context *cxt = kstack.start;
+  cxt->gpr[10] = (uintptr_t)arg;
+  cxt->mepc = (uintptr_t)entry;
   return NULL;
 }
 
