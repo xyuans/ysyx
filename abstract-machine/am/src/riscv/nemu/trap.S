@@ -61,7 +61,7 @@ __am_asm_trap:
 
   mv a0, sp
   call __am_irq_handle
-  mv t3, sp  # 在切换前保护当前的sp
+
   mv sp, a0  # 把要切换的进程的上下文指针写入sp
 
   # 恢复CSR寄存器值
@@ -71,6 +71,5 @@ __am_asm_trap:
   csrw mepc, t2
 
   MAP(REGS, POP)   # 宏指令：从栈中恢复所有通用寄存器
-  #mv sp, t3
   addi sp, sp, CONTEXT_SIZE   
   mret   # 跳转到mepc地址，恢复mstatus配置
