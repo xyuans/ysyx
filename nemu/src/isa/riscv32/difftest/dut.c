@@ -18,7 +18,7 @@
 #include "../local-include/reg.h"
 
 bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
-  for (int i = 0; i < 32; i++) {
+  for (int i = 0; i < 37; i++) {
     if(ref_r->gpr[i] != cpu.gpr[i]) {
       printf("i: %d    ref_gpr: 0x%x  nemu_gpr: 0x%x\n", i, ref_r->gpr[i], cpu.gpr[i]);
       return false;
