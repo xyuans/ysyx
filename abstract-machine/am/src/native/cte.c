@@ -23,7 +23,7 @@ static void irq_handle(Context *c) {
     printf("event:%d\n",thiscpu->ev.event);
     printf("Unhandle signal '%s' at pc = %p, badaddr = %p, cause = 0x%x\n",
       thiscpu->ev.msg, AM_REG_PC(&c->uc), thiscpu->ev.ref, thiscpu->ev.cause);
-    assert(0);
+    //assert(0);
   }
   c = user_handler(thiscpu->ev, c);
   assert(c != NULL);
@@ -125,6 +125,7 @@ static void sig_handler(int sig, siginfo_t *info, void *ucontext) {
     thiscpu->ev.cause = (uintptr_t)info->si_code;
     thiscpu->ev.msg = strsignal(sig);
   }
+  //if (false) 
   setup_stack(thiscpu->ev.event, ucontext);
 }
 
@@ -137,6 +138,7 @@ static void install_signal_handler() {
   __am_get_intr_sigmask(&s.sa_mask);
 
   int ret = sigaction(SIGVTALRM, &s, NULL);
+  //int ret = 0;
   assert(ret == 0);
   ret = sigaction(SIGUSR1, &s, NULL);
   assert(ret == 0);
