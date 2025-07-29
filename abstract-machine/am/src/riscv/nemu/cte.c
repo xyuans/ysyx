@@ -14,7 +14,8 @@ Context* __am_irq_handle(Context *c) {
     #endif 
     switch (call_id) {  // c->gpr[17] is a7
       case -1: 
-        ev.event = EVENT_YIELD; 
+        ev.event = EVENT_YIELD;
+        printf("c->mepc:%x\n", c->mepc);
         c->mepc += 4;
         break;
       default: ev.event = EVENT_ERROR; break;
