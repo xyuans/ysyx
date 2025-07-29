@@ -40,7 +40,7 @@ void *malloc(size_t size) {
   if (size == 0) return NULL;
   if (next_free == 0) next_free = (uintptr_t)heap.start;
   // 1. 对齐分配大小（向上取整到8字节）
-  size = (size + 7) & ~7;  
+  //size = (size + 7) & ~7;  
   
   // 2. 计算对齐后的起始地址
   uintptr_t aligned_addr = (next_free + 7) & ~7;
