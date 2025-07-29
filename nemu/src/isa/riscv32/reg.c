@@ -27,8 +27,13 @@ const char *regs[] = {
 void isa_reg_display() {
   printf(" %-10s%-#15x%-15d\n", "pc", cpu.pc, cpu.pc);
   for (int i=0; i<32; i++) {
-    printf(" %-10s%-#15x%-15d\n", regs[i], *(word_t *)(cpu.gpr+i), cpu.gpr[i]);
+    printf(" %-10s%-#15x%-15d\n", regs[i], cpu.gpr[i], cpu.gpr[i]);
   }
+  printf(" %-10s%-#15x%-15d\n", regs[32], cpu.mstatus, cpu.mstatus);
+  printf(" %-10s%-#15x%-15d\n", regs[33], cpu.mtvec, cpu.mtvec);
+  printf(" %-10s%-#15x%-15d\n", regs[34], cpu.mcause, cpu.mcause);
+  printf(" %-10s%-#15x%-15d\n", regs[35], cpu.mepc, cpu.mepc);
+
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
