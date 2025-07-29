@@ -14,7 +14,8 @@ Context* __am_irq_handle(Context *c) {
     #endif 
     switch (call_id) {  // c->gpr[17] is a7
       case -1: 
-        ev.event = EVENT_YIELD; 
+        ev.event = EVENT_YIELD;
+        printf("c->mepc:%x\n", c->mepc);
         c->mepc += 4;
         break;
       default: ev.event = EVENT_ERROR; break;
@@ -45,6 +46,7 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
   // 初始条件下gpr的上下文信息。
   cxt->gpr[2] = (uint32_t)cxt;
   cxt->gpr[10] = (uintptr_t)arg;
+  cxt->mstatus = 0x1800;
   cxt->mepc = (uintptr_t)entry;
   return cxt;
 }

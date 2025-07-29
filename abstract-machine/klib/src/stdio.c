@@ -33,6 +33,11 @@ int printf(const char *fmt, ...) {
           }
           break;
         }
+        case 'c': {
+          char c = va_arg(args, int);
+          putch(c);
+          break;
+        }
         case 's': {
           char *s = va_arg(args, char*);
           while(*s != '\0') {
