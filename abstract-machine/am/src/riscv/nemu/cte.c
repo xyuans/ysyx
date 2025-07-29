@@ -14,7 +14,8 @@ Context* __am_irq_handle(Context *c) {
     #endif 
     switch (call_id) {  // c->gpr[17] is a7
       case -1: 
-        ev.event = EVENT_YIELD; 
+        ev.event = EVENT_YIELD;
+        printf("c->mepc:%x\n", c->mepc);
         c->mepc += 4;
         break;
       default: ev.event = EVENT_ERROR; break;
@@ -41,11 +42,14 @@ bool cte_init(Context*(*handler)(Event, Context*)) {
 
 // kstack是栈的范围, entry是内核线程的入口, arg则是内核线程的参数
 Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
-  Context *cxt = (Context *)((uint32_t *)kstack.end - NR_REGS - 4);  // 前向32个通用寄存器和四个特殊的寄存器
+  printf("kcontext\n");
+  Context *cxt = (Context *)((uint32_t *)kstack.end - sizeof(Context));  // 前向32个通用寄存器和四个特殊的寄存器
   // 初始条件下gpr的上下文信息。
   cxt->gpr[2] = (uint32_t)cxt;
   cxt->gpr[10] = (uintptr_t)arg;
+  cxt->mstatus = 0x1800;
   cxt->mepc = (uintptr_t)entry;
+  printf("cxt is:%x\n", cxt);
   return cxt;
 }
 
