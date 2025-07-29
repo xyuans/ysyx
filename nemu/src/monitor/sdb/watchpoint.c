@@ -116,8 +116,8 @@ int check_wps() {
   for(i = 0; i < count; i++) {
     current_wp->current_value = expr(current_wp->expression, &success);
     if (current_wp->prev_value != current_wp->current_value) {
-      printf("Watchpoint: %d\n\nOld value: %d\nNew value: %d\n",
-              current_wp->NO, current_wp->prev_value, current_wp->current_value);
+      printf("Watchpoint: %d\n\nOld value: 0x%08x  %d\nNew value: 0x%08x  %d\n",
+              current_wp->NO, current_wp->prev_value, current_wp->prev_value, current_wp->current_value, current_wp->current_value);
 
       current_wp->prev_value = current_wp->current_value;
 

@@ -12,7 +12,7 @@ AM_SRCS := native/trm.c \
            native/ioe/audio.c \
            native/ioe/disk.c \
 
-CFLAGS  += -fpie $(shell sdl2-config --cflags)
+CFLAGS  += -fpie $(shell sdl2-config --cflags) -g
 ASFLAGS += -fpie -pie
 comma = ,
 LDFLAGS_CXX = $(addprefix -Wl$(comma), $(LDFLAGS)) -pie -ldl $(shell sdl2-config --libs)

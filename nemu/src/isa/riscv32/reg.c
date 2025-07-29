@@ -21,14 +21,19 @@ const char *regs[] = {
   "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
   "s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5",
   "a6", "a7", "s2", "s3", "s4", "s5", "s6", "s7",
-  "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
+  "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6",
+  "mstatus", "mtvec", "mcause", "mepc"
 };
-
 void isa_reg_display() {
   printf(" %-10s%-#15x%-15d\n", "pc", cpu.pc, cpu.pc);
   for (int i=0; i<32; i++) {
     printf(" %-10s%-#15x%-15d\n", regs[i], cpu.gpr[i], cpu.gpr[i]);
   }
+  printf(" %-10s%-#15x%-15d\n", regs[32], cpu.mstatus, cpu.mstatus);
+  printf(" %-10s%-#15x%-15d\n", regs[33], cpu.mtvec, cpu.mtvec);
+  printf(" %-10s%-#15x%-15d\n", regs[34], cpu.mcause, cpu.mcause);
+  printf(" %-10s%-#15x%-15d\n", regs[35], cpu.mepc, cpu.mepc);
+
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
@@ -41,7 +46,9 @@ word_t isa_reg_str2val(const char *s, bool *success) {
   if (strcmp(s+1, "pc") == 0) {
     return cpu.pc;
   }
-
+  if (strcmp(s+1, "mstatus") == 0) return cpu.mstatus;
+  if (strcmp(s+1, "mcause" ) == 0) return cpu.mcause;
+  if (strcmp(s+1, "mepc"   ) == 0) return cpu.mepc;
   *success = false;
   return 0;
 }
