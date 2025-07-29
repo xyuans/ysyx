@@ -46,7 +46,9 @@ word_t isa_reg_str2val(const char *s, bool *success) {
   if (strcmp(s+1, "pc") == 0) {
     return cpu.pc;
   }
-
+  if (strcmp(s+1, "mstatus") == 0) return cpu.mstatus;
+  if (strcmp(s+1, "mcause" ) == 0) return cpu.mcause;
+  if (strcmp(s+1, "mepc"   ) == 0) return cpu.mepc;
   *success = false;
   return 0;
 }
