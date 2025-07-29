@@ -64,7 +64,7 @@ __am_asm_trap:
   mv a0, sp
   call __am_irq_handle
 
-  mv sp, a0  # 把要切换的进程的上下文指针写入sp,也是进程的栈指针
+  mv sp, a0  # 把要切换的进程的上下文指针写入sp
   # 恢复CSR寄存器值
   LOAD t1, OFFSET_STATUS(sp)
   LOAD t2, OFFSET_EPC(sp)
