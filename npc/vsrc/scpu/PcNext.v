@@ -1,5 +1,5 @@
 module PcNext (
-    inout csr,
+    input csr,
     input [2:0] branch,
     input zero,
     input less,
