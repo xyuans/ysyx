@@ -126,7 +126,7 @@ module top (
   end
 
   PcNext pcnext (
-      .csr(~csr[2] & csr[1]),
+      .csr(~csr_ctr[2] & csr_ctr[1]),
       .branch(branch),
       .zero(zero),
       .less(less),
