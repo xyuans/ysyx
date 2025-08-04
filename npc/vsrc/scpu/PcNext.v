@@ -1,12 +1,12 @@
 module PcNext (
-    inout csr_pc,
+    inout csr,
     input [2:0] branch,
     input zero,
     input less,
     output reg [1:0] pc_src
 );
   wire [5:0] input_all;
-  assign input_all = {csr_pc, branch, zero, less};
+  assign input_all = {csr, branch, zero, less};
   always @(*) begin
     casez (input_all)
       6'b0_000_?_?: pc_src = 2'b00;  // 非跳转指令,pc+4

@@ -39,7 +39,7 @@ module top (
   Control control (
       .op(inst[6:2]),
       .funct3(inst[14:12]),
-      .funct7(inst[30]),
+      .funct7(inst[30:29]),
       .reg_write(reg_write),
       .imm_src(imm_src),
       .alu_src(alu_src),
@@ -126,10 +126,10 @@ module top (
   end
 
   PcNext pcnext (
-      .csr_pc(csr_pc),
+      .csr(~csr[2] & csr[1]),
       .branch(branch),
-      .zero  (zero),
-      .less  (less),
+      .zero(zero),
+      .less(less),
       .pc_src(pc_src)
   );
 

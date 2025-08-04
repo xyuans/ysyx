@@ -11,12 +11,12 @@ module Control (
     output [2:0] mem_op,
     output [2:0] wd_src,
     output [2:0] branch,
-    output [1:0] csr_ctr
+    output [2:0] csr_ctr
 );
 
 
-  reg [20:0] all_out;
-  assign {reg_write, imm_src, alu_src, alu_ctr, mem_write, mem_op, wd_src, branch, csr} = all_out;
+  reg [21:0] all_out;
+  assign {reg_write, imm_src, alu_src, alu_ctr, mem_write, mem_op, wd_src, branch, csr_ctr} = all_out;
   always @(*) begin
     casez ({
       funct7, funct3, op
