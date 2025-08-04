@@ -41,7 +41,7 @@ module Csr (
         12'h305: mtvec <= csr_wd;
         12'h341: mepc <= csr_wd;
         12'h342: mcause <= csr_wd;
-        default: csr_wd <= csr_wd;
+        default: mstatus <= mstatus;
       endcase
     end
 
