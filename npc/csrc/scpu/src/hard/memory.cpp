@@ -73,7 +73,7 @@ extern "C" uint32_t pmem_read(uint32_t addr) {
 extern "C" void pmem_write(uint32_t waddr, uint32_t wdata, int len) {
   if (waddr == USART_ADDR) {
     // printf("usart happen\n");
-    putchar((uint8_t)wdata);
+    putc((uint8_t)wdata, stderr);
     return;
   }
   uint32_t index = waddr - 0x80000000;
