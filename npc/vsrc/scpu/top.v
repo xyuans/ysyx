@@ -149,7 +149,7 @@ module top (
     if (rst) pc <= 32'h80000000;
     else begin
       if ({inst[20], inst[6:0]} == 8'b1_1110011) ebreak();
-      pc <= pc_result;
+      else pc <= pc_result;
     end
   end
 
